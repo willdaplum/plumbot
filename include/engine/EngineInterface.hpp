@@ -9,7 +9,7 @@
 
 class EngineInterface {
 public:
- EngineInterface();
+
 
  /**
  * @brief Interprets UCI commands and forwards to chess engine
@@ -19,7 +19,7 @@ public:
  std::string process_command(const std::string uci_input);
 
 private:
- std::string uci_cmd();
+ void uci_cmd();
 
  std::string debug_cmd();
 
@@ -41,7 +41,7 @@ private:
 
  std::string quit_cmd();
 
- // Engine plumbot;
+ Engine plumbot = Engine();
 
  const std::unordered_map<std::string, UCICommand> uci_commands {
     {"uci", UCICommand::UCI},

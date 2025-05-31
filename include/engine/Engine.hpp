@@ -10,9 +10,13 @@ public:
 
  void set_position_new_game();
 
+ void get_id();
+
 private:
  void minimax();
 
  void static_evaluate();
 
+ const std::string id_name = "plumbot";
+ const std::string id_author = "will cooley";
 };
