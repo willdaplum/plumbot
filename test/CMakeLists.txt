@@ -18,7 +18,7 @@ include(../cmake/CPM.cmake)
 CPMAddPackage(
   NAME googletest
   GITHUB_REPOSITORY google/googletest
-  GIT_TAG release-1.14.0
+  GIT_TAG v1.14.0
 )
 CPMAddPackage("gh:TheLartians/Format.cmake@1.7.3")
 
