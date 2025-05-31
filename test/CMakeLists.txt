@@ -15,7 +15,11 @@ include(../cmake/tools.cmake)
 
 include(../cmake/CPM.cmake)
 
-CPMAddPackage("gh:doctest/doctest@2.4.12")
+CPMAddPackage(
+  NAME googletest
+  GITHUB_REPOSITORY google/googletest
+  GIT_TAG release-1.14.0
+)
 CPMAddPackage("gh:TheLartians/Format.cmake@1.7.3")
 
 if(TEST_INSTALLED_VERSION)
@@ -27,9 +31,13 @@ endif()
 # ---- Create binary ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
+
 add_executable(${PROJECT_NAME} ${sources})
-target_link_libraries(${PROJECT_NAME} doctest::doctest Plumbot)
+target_link_libraries(${PROJECT_NAME} PRIVATE gtest_main Plumbot)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME})
 
 # enable compiler warnings
 if(NOT TEST_INSTALLED_VERSION)
@@ -45,12 +53,6 @@ endif()
 
 enable_testing()
 
-# Note: doctest and similar testing frameworks can automatically configure CMake tests. For other
-# testing frameworks add the tests target instead: add_test(NAME ${PROJECT_NAME} COMMAND
-# ${PROJECT_NAME})
-
-include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
-doctest_discover_tests(${PROJECT_NAME})
 
 # ---- code coverage ----
 

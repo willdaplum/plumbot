@@ -4,7 +4,8 @@
 #include "engine/EngineInterface.hpp"
 
 auto main(int argc, char** argv) -> int {
-  (void)argv[argc-1]; // Not using cmd line args, so this quiets WUnused-variables
+  (void)argv[argc - 1];  // Not using cmd line args, so this quiets WUnused-variables
+
   EngineInterface engine = EngineInterface();
 
   std::string line;
@@ -14,6 +15,5 @@ auto main(int argc, char** argv) -> int {
     if (line == "exit") break;
 
     engine.process_command(line);
-    
   }
 }

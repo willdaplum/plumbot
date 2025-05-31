@@ -2,21 +2,26 @@
 
 #include <string>
 
+#include "engine/Command.hpp"
+
 class Engine {
 public:
- void set_debug(bool debug_on);
+  void set_debug(DebugOption debug_mode);
 
- void set_position(std::string fen);
+  void set_position(std::string fen);
 
- void set_position_new_game();
+  void set_position_new_game();
 
- void get_id();
+  void send_id();
+
+  void send_info(std::string info);
 
 private:
- void minimax();
+  void minimax();
 
- void static_evaluate();
+  void static_evaluate();
 
- const std::string id_name = "plumbot";
- const std::string id_author = "will cooley";
+  const std::string m_id_name = "plumbot";
+  const std::string m_id_author = "will cooley";
+  bool m_debug_mode = false;
 };
