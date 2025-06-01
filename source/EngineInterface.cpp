@@ -43,7 +43,7 @@ std::string EngineInterface::process_command(const std::string uci_input) {
       std::cout << "ponderhit\n";
       break;
     case UCICommand::POSITION:
-      std::cout << "position\n";
+      position_cmd(uci_options);
       break;
     case UCICommand::QUIT:
       std::cout << "quit\n";
@@ -84,4 +84,18 @@ void EngineInterface::debug_cmd(const std::vector<std::string> &uci_options) {
 
 void EngineInterface::isready_cmd() {
   // TODO: threading
+};
+
+void EngineInterface::position_cmd(const std::vector<std::string> &uci_options) {
+  if (uci_options.size() == 0) {
+    // TODO: error
+  }
+  if (uci_options.at(0) == "startpos") {
+    plumbot.set_position_new_game();
+  } else {
+    plumbot.set_position(uci_options[0]);
+  }
+  for (size_t i = 1; i < uci_options.size(); ++i) {  // moves start after fen
+    plumbot.push_move_uci(uci_options[i]);
+  }
 };

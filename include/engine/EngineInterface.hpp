@@ -31,7 +31,7 @@ private:
 
   std::string ucinewgame_cmd();
 
-  std::string position_cmd();
+  void position_cmd(const std::vector<std::string> &uci_options);
 
   std::string go_cmd();
 
