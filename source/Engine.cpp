@@ -5,6 +5,15 @@
 
 #include "engine/Command.hpp"
 
+namespace {
+  // excludes king & none, as they don't have a defined value
+  constexpr chess::PieceType valued_piece_types[]
+      = {chess::PieceType::PAWN, chess::PieceType::BISHOP, chess::PieceType::ROOK,
+         chess::PieceType::KNIGHT, chess::PieceType::QUEEN};
+
+  constexpr chess::Color colors[] = {chess::Color::BLACK, chess::Color::WHITE};
+}  // namespace
+
 PositionEvaluation::PositionEvaluation() {
   score = 0;
   moves_to_mate = std::numeric_limits<int>::infinity();
@@ -40,8 +49,25 @@ void Engine::set_position(std::string fen) { m_board.setFen(fen); };
 
 void Engine::set_position_new_game() { set_position(chess::constants::STARTPOS); };
 
+int Engine::get_piece_value(chess::PieceType piece_type) {
+  return m_piece_values[static_cast<int>(piece_type)];
+};
+
+// NOTE: does not check for checkmate, will always be infinity
+// NOTE: board with white up material will always be positive, black negative
 PositionEvaluation Engine::static_evaluation() {
-    return PositionEvaluation();
+  int score = 0;
+  for (chess::PieceType piece_type : valued_piece_types) {
+    for (chess::Color color : colors) {
+      int type_total_score = get_piece_value(piece_type) * m_board.pieces(piece_type, color).count();
+      if (color == chess::Color::BLACK) {
+        score -= type_total_score;
+      } else {  // color == chess::Color::WHITE
+        score += type_total_score;
+      }
+    }
+  }
+  return PositionEvaluation(score, std::numeric_limits<int>::infinity());
 };
 
 // TODO: turn alpha and beta into PositionEvaluation objects? I think?

@@ -47,8 +47,19 @@ private:
 
   PositionEvaluation static_evaluation();
 
+  int get_piece_value(chess::PieceType piece_type);
+
   const std::string m_id_name = "plumbot";
   const std::string m_id_author = "will cooley";
   bool m_debug_mode = false;
   chess::Board m_board = chess::Board(chess::constants::STARTPOS);
+  std::unordered_map<int, int> m_piece_values = {
+    {static_cast<int>(chess::PieceType::PAWN), 1},
+    {static_cast<int>(chess::PieceType::BISHOP), 3},
+    {static_cast<int>(chess::PieceType::KNIGHT), 3},
+    {static_cast<int>(chess::PieceType::ROOK), 5},
+    {static_cast<int>(chess::PieceType::QUEEN), 9},
+    {static_cast<int>(chess::PieceType::NONE), 0},
+    {static_cast<int>(chess::PieceType::KING), 0}
+  };
 };
