@@ -38,5 +38,15 @@ jobs:
           cd build
           ctest --build-config Debug
 
-      - name: collect code coverage
-        run: bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+      - name: export llvm coverage
+        run: |
+          llvm-profdata merge -sparse build/test/PlumbotTests.profraw -o plumbot.profdata
+          llvm-cov export ./build/test/PlumbotTests \
+            -instr-profile=plumbot.profdata \
+            -format=lcov > coverage.info
+
+      - name: upload coverage to codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.info
+          fail_ci_if_error: true

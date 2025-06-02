@@ -2,3 +2,9 @@
 /.vscode
 /cpm_modules
 .DS_Store
+/coverage/
+/coverage-html/
+*.profraw
+*.profdata
+coverage.json
+coverage.info

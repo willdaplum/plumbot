@@ -15,6 +15,7 @@ include(../cmake/tools.cmake)
 
 include(../cmake/CPM.cmake)
 
+
 CPMAddPackage(
   NAME googletest
   GITHUB_REPOSITORY google/googletest
@@ -54,9 +55,16 @@ endif()
 enable_testing()
 
 
-# ---- code coverage ----
+# ---- Clang/LLVM Code Coverage ----
 
-if(ENABLE_TEST_COVERAGE)
-  target_compile_options(Plumbot PUBLIC -O0 -g -fprofile-arcs -ftest-coverage)
-  target_link_options(Plumbot PUBLIC -fprofile-arcs -ftest-coverage)
+if(ENABLE_TEST_COVERAGE AND (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"))
+  message(STATUS "Code coverage enabled using Clang/LLVM")
+  
+  # Apply to test executable
+  target_compile_options(${PROJECT_NAME} PRIVATE -fprofile-instr-generate -fcoverage-mapping -O0 -g)
+  target_link_options(${PROJECT_NAME} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
+
+  # Apply to library under test
+  target_compile_options(Plumbot PUBLIC -fprofile-instr-generate -fcoverage-mapping -O0 -g)
+  target_link_options(Plumbot PUBLIC -fprofile-instr-generate -fcoverage-mapping)
 endif()
