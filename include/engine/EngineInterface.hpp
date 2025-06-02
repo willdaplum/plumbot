@@ -14,10 +14,12 @@ public:
    * @param uci_input the command line input to be parsed as UCI
    * @return a string of expected UCI output
    */
-  std::string process_command(const std::string uci_input);
+  void process_command(const std::string uci_input);
 
 private:
   std::vector<std::string> vectorize_options(const std::string uci_options);
+
+  std::vector<std::string> vectorize_options_with_fen(const std::string uci_options);
 
   void uci_cmd();
 
@@ -33,7 +35,7 @@ private:
 
   void position_cmd(const std::vector<std::string> &uci_options);
 
-  std::string go_cmd();
+  void go_cmd();
 
   std::string stop_cmd();
 

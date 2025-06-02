@@ -12,13 +12,24 @@ std::vector<std::string> EngineInterface::vectorize_options(const std::string uc
   std::istream_iterator<std::string> end;
   std::vector<std::string> v_options(begin, end);
   return v_options;
-}
+};
 
-std::string EngineInterface::process_command(const std::string uci_input) {
+std::vector<std::string> EngineInterface::vectorize_options_with_fen(
+    const std::string uci_options) {
+  std::vector<std::string> v_options = vectorize_options(uci_options);
+  if (v_options.at(0) != "startpos") {
+    for (size_t i = 1; i < 6; ++i) {  // re-form fen as 0 index option
+      v_options.at(0) += " " + v_options.at(i);
+    }
+    v_options.erase(v_options.begin() + 1, v_options.begin() + 6);
+  }
+  return v_options;
+};
+
+void EngineInterface::process_command(const std::string uci_input) {
   const std::string delimiter = " ";
   std::string uci_command_text = uci_input.substr(0, uci_input.find(delimiter));
-  std::vector<std::string> uci_options
-      = vectorize_options(uci_input.substr(uci_input.find(delimiter) + 1));
+  std::string uci_options = uci_input.substr(uci_input.find(delimiter) + 1);
 
   auto uci_command_it = uci_commands.find(uci_command_text);
   if (uci_command_it == uci_commands.end()) {
@@ -31,10 +42,10 @@ std::string EngineInterface::process_command(const std::string uci_input) {
       std::cout << "unrecognized command\n";
       break;
     case UCICommand::DEBUG:
-      debug_cmd(uci_options);
+      debug_cmd(vectorize_options(uci_options));
       break;
     case UCICommand::GO:
-      std::cout << "go\n";
+      go_cmd();
       break;
     case UCICommand::ISREADY:
       isready_cmd();
@@ -43,7 +54,7 @@ std::string EngineInterface::process_command(const std::string uci_input) {
       std::cout << "ponderhit\n";
       break;
     case UCICommand::POSITION:
-      position_cmd(uci_options);
+      position_cmd(vectorize_options_with_fen(uci_options));
       break;
     case UCICommand::QUIT:
       std::cout << "quit\n";
@@ -64,7 +75,6 @@ std::string EngineInterface::process_command(const std::string uci_input) {
       std::cout << "ucinewgame\n";
       break;
   }
-  return "";
 };
 
 void EngineInterface::uci_cmd() { plumbot.send_id(); };
@@ -99,3 +109,8 @@ void EngineInterface::position_cmd(const std::vector<std::string> &uci_options) 
     plumbot.push_move_uci(uci_options[i]);
   }
 };
+
+void EngineInterface::go_cmd() {
+  chess::Move move = plumbot.find_move();
+  std::cout << "bestmove " << chess::uci::moveToUci(move) << std::endl;
+}

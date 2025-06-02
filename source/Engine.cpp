@@ -17,14 +17,21 @@ namespace {
 PositionEvaluation::PositionEvaluation() {
   score = 0;
   moves_to_mate = std::numeric_limits<int>::infinity();
+  move = chess::Move();
 };
 
 PositionEvaluation::PositionEvaluation(int score) : score(score) {
   moves_to_mate = std::numeric_limits<int>::infinity();
+  move = chess::Move();
 };
 
 PositionEvaluation::PositionEvaluation(int score, int moves_to_mate)
-    : score(score), moves_to_mate(moves_to_mate) {};
+    : score(score), moves_to_mate(moves_to_mate) {
+  move = chess::Move();
+};
+
+PositionEvaluation::PositionEvaluation(int score, int moves_to_mate, chess::Move move)
+    : score(score), moves_to_mate(moves_to_mate), move(move) {};
 
 void Engine::send_id() {
   std::cout << "id name " << m_debug_mode << std::endl;
@@ -32,6 +39,10 @@ void Engine::send_id() {
 };
 
 void Engine::set_debug(DebugOption debug_mode) { m_debug_mode = static_cast<int>(debug_mode); };
+
+bool Engine::get_debug() {
+    return m_debug_mode;
+};
 
 void Engine::send_info(std::string info) { std::cout << "info " << info << std::endl; };
 
@@ -49,6 +60,10 @@ void Engine::set_position(std::string fen) { m_board.setFen(fen); };
 
 void Engine::set_position_new_game() { set_position(chess::constants::STARTPOS); };
 
+std::string Engine::get_position() {
+    return m_board.getFen();
+};
+
 int Engine::get_piece_value(chess::PieceType piece_type) {
   return m_piece_values[static_cast<int>(piece_type)];
 };
@@ -59,7 +74,8 @@ PositionEvaluation Engine::static_evaluation() {
   int score = 0;
   for (chess::PieceType piece_type : valued_piece_types) {
     for (chess::Color color : colors) {
-      int type_total_score = get_piece_value(piece_type) * m_board.pieces(piece_type, color).count();
+      int type_total_score
+          = get_piece_value(piece_type) * m_board.pieces(piece_type, color).count();
       if (color == chess::Color::BLACK) {
         score -= type_total_score;
       } else {  // color == chess::Color::WHITE
@@ -84,6 +100,11 @@ PositionEvaluation Engine::minimax(int depth, int alpha, int beta, bool maximizi
     for (auto it = moves.begin(); moves.begin() != moves.end(); ++it) {
       m_board.makeMove(*it);
       eval = std::max(eval, minimax(depth - 1, alpha, beta, false), EvaluationCmp());
+      if (m_debug_mode && depth == 3) {
+        std::cout << "move: " << chess::uci::moveToUci(*it) << " score: " << eval.score
+                  << std::endl;
+      }
+      eval.move = *it;
       m_board.unmakeMove(*it);
       if (eval.score >= beta) {
         break;
@@ -95,7 +116,12 @@ PositionEvaluation Engine::minimax(int depth, int alpha, int beta, bool maximizi
     eval.score = -std::numeric_limits<int>::infinity();
     for (auto it = moves.begin(); moves.begin() != moves.end(); ++it) {
       m_board.makeMove(*it);
+      eval.move = *it;
       eval = std::min(eval, minimax(depth - 1, alpha, beta, true), EvaluationCmp());
+      if (m_debug_mode && depth == 3) {
+        std::cout << "move: " << chess::uci::moveToUci(*it) << " score: " << eval.score
+                  << std::endl;
+      }
       m_board.unmakeMove(*it);
       if (eval.score <= alpha) {
         break;
@@ -105,3 +131,12 @@ PositionEvaluation Engine::minimax(int depth, int alpha, int beta, bool maximizi
     return eval;
   }
 };
+
+chess::Move Engine::find_move() {
+  PositionEvaluation best_move = PositionEvaluation();
+  for (size_t ply = 1; ply < 4; ++ply) {
+    best_move = minimax(ply, -std::numeric_limits<int>::infinity(),
+                        std::numeric_limits<int>::infinity(), true);
+  }
+  return best_move.move;
+}
