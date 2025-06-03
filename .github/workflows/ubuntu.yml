@@ -60,7 +60,7 @@ jobs:
           ls
           pwd
           ls test
-          llvm-profdata merge -sparse PlumbotTests.profraw -o plumbot.profdata
+          llvm-profdata merge -sparse ./test/PlumbotTests.profraw -o plumbot.profdata
           llvm-cov export ./test/PlumbotTests \
             -instr-profile=plumbot.profdata \
             -format=lcov > coverage.info
