@@ -40,6 +40,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 include(GoogleTest)
 gtest_discover_tests(${PROJECT_NAME})
 
+
+set(PROFILE_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/PlumbotTests.profraw")
+set_property(GLOBAL PROPERTY ENVIRONMENT "LLVM_PROFILE_FILE=${PROFILE_OUTPUT}")
+message(STATUS "Setting LLVM_PROFILE_FILE to: ${PROFILE_OUTPUT}")
+
 # enable compiler warnings
 if(NOT TEST_INSTALLED_VERSION)
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")

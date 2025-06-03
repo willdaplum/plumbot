@@ -44,16 +44,15 @@ jobs:
 
       - name: test
         run: |
-          export LLVM_PROFILE_FILE=build/test/PlumbotTests.profraw
           cd build
-          ctest --output-on-failure
+          LLVM_PROFILE_FILE=PlumbotTests.profraw ctest --output-on-failure
 
       - name: export llvm coverage
         run: |
-          llvm-profdata merge -sparse build/test/PlumbotTests.profraw -o plumbot.profdata
-          llvm-cov export ./build/test/PlumbotTests \
-            -instr-profile=plumbot.profdata \
-            -format=lcov > coverage.info
+          llvm-profdata merge -sparse ./test/PlumbotTests.profraw -o plumbot.profdata
+          llvm-cov export ./test/PlumbotTests \
+          -instr-profile=plumbot.profdata \
+          -format=lcov > coverage.info
 
       - name: upload coverage to codecov
         uses: codecov/codecov-action@v4

@@ -8,3 +8,4 @@
 *.profdata
 coverage.json
 coverage.info
+/Testing
