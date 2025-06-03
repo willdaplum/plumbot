@@ -50,10 +50,10 @@ jobs:
       - name: export llvm coverage
         run: |
           cd build
-          llvm-profdata merge -sparse ./test/PlumbotTests.profraw -o plumbot.profdata
+          llvm-profdata merge -sparse PlumbotTests.profraw -o plumbot.profdata
           llvm-cov export ./test/PlumbotTests \
-          -instr-profile=plumbot.profdata \
-          -format=lcov > coverage.info
+            -instr-profile=plumbot.profdata \
+            -format=lcov > coverage.info
 
       - name: upload coverage to codecov
         uses: codecov/codecov-action@v4
