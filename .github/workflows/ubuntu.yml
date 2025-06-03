@@ -35,6 +35,10 @@ jobs:
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-14 100
           sudo update-alternatives --install /usr/bin/llvm-cov llvm-cov /usr/bin/llvm-cov-14 100
           sudo update-alternatives --install /usr/bin/llvm-profdata llvm-profdata /usr/bin/llvm-profdata-14 100
+          llvm-profdata --version
+          llbm-cov --version
+          clang --version
+          clang++ --version
 
       - name: configure
         run: cmake -Stest -Bbuild -DENABLE_TEST_COVERAGE=1 -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug
