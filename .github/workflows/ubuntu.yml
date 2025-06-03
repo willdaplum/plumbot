@@ -49,6 +49,7 @@ jobs:
 
       - name: export llvm coverage
         run: |
+          cd build
           llvm-profdata merge -sparse ./test/PlumbotTests.profraw -o plumbot.profdata
           llvm-cov export ./test/PlumbotTests \
           -instr-profile=plumbot.profdata \
