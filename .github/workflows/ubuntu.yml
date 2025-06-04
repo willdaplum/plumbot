@@ -63,6 +63,7 @@ jobs:
           llvm-profdata merge -sparse ./test/PlumbotTests.profraw -o plumbot.profdata
           llvm-cov export ./test/PlumbotTests \
             -instr-profile=plumbot.profdata \
+            --ignore-filename-regex='.*/chess\.hpp' \
             -format=lcov > coverage.info
 
       - name: upload coverage to codecov

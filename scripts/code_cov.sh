@@ -4,8 +4,9 @@ cmake --build build
 cd build
 LLVM_PROFILE_FILE=PlumbotTests.profraw ctest --output-on-failure
 /opt/homebrew/opt/llvm/bin/llvm-profdata merge -sparse ./test/PlumbotTests.profraw -o plumbot.profdata
-/opt/homebrew/opt/llvm/bin/llvm-cov export ./test/PlumbotTests \
+llvm-cov export ./test/PlumbotTests \
       -instr-profile=plumbot.profdata \
+      --ignore-filename-regex='.*/chess\.hpp' \
       -format=lcov > coverage.info
 /opt/homebrew/opt/llvm/bin/llvm-cov show ./test/PlumbotTests \
   -instr-profile=plumbot.profdata \
