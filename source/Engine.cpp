@@ -40,9 +40,7 @@ void Engine::send_id() {
 
 void Engine::set_debug(DebugOption debug_mode) { m_debug_mode = static_cast<int>(debug_mode); };
 
-bool Engine::get_debug() {
-    return m_debug_mode;
-};
+bool Engine::get_debug() { return m_debug_mode; };
 
 void Engine::send_info(std::string info) { std::cout << "info " << info << std::endl; };
 
@@ -55,9 +53,7 @@ void Engine::set_position(std::string fen) { m_board.setFen(fen); };
 
 void Engine::set_position_new_game() { set_position(chess::constants::STARTPOS); };
 
-std::string Engine::get_position() {
-    return m_board.getFen();
-};
+std::string Engine::get_position() { return m_board.getFen(); };
 
 int Engine::get_piece_value(chess::PieceType piece_type) {
   return m_piece_values[static_cast<int>(piece_type)];
@@ -98,16 +94,15 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, false);
       cur_eval.move = *it;
       if (m_debug_mode) {
-        if(depth == 2) {
-            std::cout << "-";
-        }
-        else if (depth == 1) {
-            std::cout << "--";
+        if (depth == 2) {
+          std::cout << "-";
+        } else if (depth == 1) {
+          std::cout << "--";
         }
         std::cout << "d: " << depth << " move: " << move_uci << " score: " << cur_eval.score
                   << std::endl;
       }
-      if(compare_moves(cur_eval, eval, maximizing_player)) {
+      if (compare_moves(cur_eval, eval, maximizing_player)) {
         eval = cur_eval;
       }
       m_board.unmakeMove(*it);
@@ -125,16 +120,15 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, true);
       cur_eval.move = *it;
       if (m_debug_mode) {
-        if(depth == 2) {
-            std::cout << "-";
-        }
-        else if (depth == 1) {
-            std::cout << "--";
+        if (depth == 2) {
+          std::cout << "-";
+        } else if (depth == 1) {
+          std::cout << "--";
         }
         std::cout << "d: " << depth << " move: " << move_uci << " score: " << cur_eval.score
                   << std::endl;
       }
-      if(compare_moves(cur_eval, eval, maximizing_player)) {
+      if (compare_moves(cur_eval, eval, maximizing_player)) {
         eval = cur_eval;
       }
       m_board.unmakeMove(*it);
@@ -149,31 +143,30 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
 
 chess::Move Engine::find_move() {
   PositionEvaluation best_move = PositionEvaluation();
-  for (size_t ply = 3; ply < 4; ++ply) {
+  bool maximizing_player = m_board.sideToMove() == chess::Color::WHITE;
+  for (size_t ply = 1; ply < 7; ++ply) {
     best_move = minimax(ply, -std::numeric_limits<double>::infinity(),
-                        std::numeric_limits<double>::infinity(), true);
+                        std::numeric_limits<double>::infinity(), maximizing_player);
   }
   return best_move.move;
 }
 
- bool Engine::compare_moves(PositionEvaluation a, PositionEvaluation b, bool maximizing_player) {
-    if(a.move == chess::Move::NO_MOVE && b.move != chess::Move::NO_MOVE) {
-        return false;
+bool Engine::compare_moves(PositionEvaluation a, PositionEvaluation b, bool maximizing_player) {
+  if (a.move == chess::Move::NO_MOVE && b.move != chess::Move::NO_MOVE) {
+    return false;
+  } else if (a.move != chess::Move::NO_MOVE && b.move == chess::Move::NO_MOVE) {
+    return true;
+  }
+
+  if (maximizing_player) {
+    if (a.moves_to_mate == b.moves_to_mate) {
+      return a.score > b.score;
     }
-    else if(a.move != chess::Move::NO_MOVE && b.move == chess::Move::NO_MOVE) {
-        return true;
+    return a.moves_to_mate < b.moves_to_mate;
+  } else {  // minimizing_player
+    if (a.moves_to_mate == b.moves_to_mate) {
+      return a.score < b.score;
     }
-    
-    if(maximizing_player) {
-        if (a.moves_to_mate == b.moves_to_mate) {
-            return a.score > b.score;
-        }
-        return a.moves_to_mate < b.moves_to_mate;
-    }
-    else { // minimizing_player
-        if (a.moves_to_mate == b.moves_to_mate) {
-            return a.score < b.score;
-        }
-        return a.moves_to_mate > b.moves_to_mate;
-    }
- }
+    return a.moves_to_mate > b.moves_to_mate;
+  }
+}

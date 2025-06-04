@@ -22,8 +22,7 @@ public:
 
 class Engine {
 public:
-
-/**
+  /**
    * @brief Interprets UCI commands and forwards to chess engine
    * @param debug_mode Flag to be set (ON -> true)
    */
@@ -64,6 +63,10 @@ public:
 
   void send_info(std::string info);
 
+  /**
+   * @brief Choose move on board using minimax with alphabeta
+   * @return Move on memeber board engine finds to be optimal
+   */
   chess::Move find_move();
 
 private:
