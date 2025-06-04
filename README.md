@@ -1,9 +1,9 @@
-[![Actions Status](https://github.com/TheLartians/ModernCppStarter/workflows/MacOS/badge.svg)](https://github.com/TheLartians/ModernCppStarter/actions)
-[![Actions Status](https://github.com/TheLartians/ModernCppStarter/workflows/Windows/badge.svg)](https://github.com/TheLartians/ModernCppStarter/actions)
-[![Actions Status](https://github.com/TheLartians/ModernCppStarter/workflows/Ubuntu/badge.svg)](https://github.com/TheLartians/ModernCppStarter/actions)
-[![Actions Status](https://github.com/TheLartians/ModernCppStarter/workflows/Style/badge.svg)](https://github.com/TheLartians/ModernCppStarter/actions)
-[![Actions Status](https://github.com/TheLartians/ModernCppStarter/workflows/Install/badge.svg)](https://github.com/TheLartians/ModernCppStarter/actions)
-[![codecov](https://codecov.io/gh/TheLartians/ModernCppStarter/branch/master/graph/badge.svg)](https://codecov.io/gh/TheLartians/ModernCppStarter)
+[![Actions Status](https://github.com/willdaplum/plumbot/workflows/MacOS/badge.svg)](https://github.com/willdaplum/plumbot/actions)
+[![Actions Status](https://github.com/willdaplum/plumbot/workflows/Windows/badge.svg)](https://github.com/willdaplum/plumbot/actions)
+[![Actions Status](https://github.com/willdaplum/plumbot/workflows/Ubuntu/badge.svg)](https://github.com/willdaplum/plumbot/actions)
+[![Actions Status](https://github.com/willdaplum/plumbot/workflows/Style/badge.svg)](https://github.com/willdaplum/plumbot/actions)
+[![Actions Status](https://github.com/willdaplum/plumbot/workflows/Install/badge.svg)](https://github.com/willdaplum/plumbot/actions) 
+[![codecov](https://codecov.io/gh/willdaplum/plumbot/graph/badge.svg?token=P5ZVCTNV4X)](https://codecov.io/gh/willdaplum/plumbot)
 
 <p align="center">
   <img src="https://repository-images.githubusercontent.com/254842585/4dfa7580-7ffb-11ea-99d0-46b8fe2f4170" height="175" width="auto" />
