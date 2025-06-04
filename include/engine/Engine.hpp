@@ -9,24 +9,15 @@ class PositionEvaluation {
 public:
   PositionEvaluation();
 
-  PositionEvaluation(int score);
+  PositionEvaluation(double score);
 
-  PositionEvaluation(int score, int moves_to_mate);
+  PositionEvaluation(double score, int moves_to_mate);
 
-  PositionEvaluation(int score, int moves_to_mate, chess::Move move);
+  PositionEvaluation(double score, int moves_to_mate, chess::Move move);
 
-  int score;
+  double score;
   int moves_to_mate;
   chess::Move move;
-};
-
-struct EvaluationCmp {
-  bool operator()(PositionEvaluation a, PositionEvaluation b) const {
-    if (a.score == b.score) {
-      return a.moves_to_mate < b.moves_to_mate;
-    }
-    return a.score < b.score;
-  }
 };
 
 class Engine {
@@ -63,9 +54,11 @@ public:
    */
   std::string get_position();
 
+  /**
+   * @brief Make move on engine board
+   * @param uci_move move in UCI format
+   */
   void push_move_uci(std::string uci_move);
-
-  void pop_move_uci(std::string uci_move);
 
   void send_id();
 
@@ -74,9 +67,12 @@ public:
   chess::Move find_move();
 
 private:
-  PositionEvaluation minimax(int depth, int alpha, int beta, bool maximizing_player);
+  PositionEvaluation minimax(int depth, double alpha, double beta, bool maximizing_player);
 
   PositionEvaluation static_evaluation();
+
+  // true: a should be selected
+  bool compare_moves(PositionEvaluation a, PositionEvaluation b, bool maximizing_player);
 
   int get_piece_value(chess::PieceType piece_type);
 
