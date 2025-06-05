@@ -51,33 +51,30 @@ void EngineInterface::process_command(const std::string uci_input) {
       isready_cmd();
       break;
     case UCICommand::PONDERHIT:
-      std::cout << "ponderhit\n";
       break;
     case UCICommand::POSITION:
       position_cmd(vectorize_options_with_fen(uci_options));
       break;
     case UCICommand::QUIT:
-      std::cout << "quit\n";
       break;
     case UCICommand::REGISTER:
-      std::cout << "register\n";
       break;
     case UCICommand::SETOPTION:
-      std::cout << "setoption\n";
       break;
     case UCICommand::STOP:
-      std::cout << "stop\n";
       break;
     case UCICommand::UCI:
       uci_cmd();
       break;
     case UCICommand::UCINEWGAME:
-      std::cout << "ucinewgame\n";
       break;
   }
 };
 
-void EngineInterface::uci_cmd() { plumbot.send_id(); };
+void EngineInterface::uci_cmd() { 
+  plumbot.send_id(); 
+  plumbot.send_uciok();
+};
 
 void EngineInterface::debug_cmd(const std::vector<std::string> &uci_options) {
   if (uci_options.size() != 1) {
@@ -93,7 +90,7 @@ void EngineInterface::debug_cmd(const std::vector<std::string> &uci_options) {
 };
 
 void EngineInterface::isready_cmd() {
-  // TODO: threading
+  plumbot.send_isready();
 };
 
 void EngineInterface::position_cmd(const std::vector<std::string> &uci_options) {
@@ -105,7 +102,7 @@ void EngineInterface::position_cmd(const std::vector<std::string> &uci_options) 
   } else {
     plumbot.set_position(uci_options[0]);
   }
-  for (size_t i = 1; i < uci_options.size(); ++i) {  // moves start after fen
+  for (size_t i = 2; i < uci_options.size(); ++i) {  // moves start after fen
     plumbot.push_move_uci(uci_options[i]);
   }
 };

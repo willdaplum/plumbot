@@ -63,6 +63,10 @@ public:
 
   void send_info(std::string info);
 
+  void send_uciok();
+
+  void send_isready();
+
   /**
    * @brief Choose move on board using minimax with alphabeta
    * @return Move on memeber board engine finds to be optimal

@@ -72,6 +72,14 @@ TEST_F(EngineTest, PushMove) {
   }
 };
 
+TEST_F(EngineTest, PushTwoMoves) {
+  engine.set_position_new_game();
+  engine.push_move_uci("a2a3");
+  EXPECT_EQ(engine.get_position(), "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1");
+  engine.push_move_uci("f7f6");
+  EXPECT_EQ(engine.get_position(), "rnbqkbnr/ppppp1pp/5p2/8/8/P7/1PPPPPPP/RNBQKBNR w KQkq - 0 2");
+};
+
 TEST_F(EngineTest, FindMoveTakeQueenSimple) {
   engine.set_position("6k1/q7/8/8/8/4Q3/8/3K4 w - - 0 1");
   std::string engine_move = chess::uci::moveToUci(engine.find_move());

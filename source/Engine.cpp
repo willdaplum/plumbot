@@ -34,7 +34,7 @@ PositionEvaluation::PositionEvaluation(double score, int moves_to_mate, chess::M
     : score(score), moves_to_mate(moves_to_mate), move(move) {};
 
 void Engine::send_id() {
-  std::cout << "id name " << m_debug_mode << std::endl;
+  std::cout << "id name " << m_id_name << std::endl;
   std::cout << "id author " << m_id_author << std::endl;
 };
 
@@ -43,6 +43,10 @@ void Engine::set_debug(DebugOption debug_mode) { m_debug_mode = static_cast<int>
 bool Engine::get_debug() { return m_debug_mode; };
 
 void Engine::send_info(std::string info) { std::cout << "info " << info << std::endl; };
+
+void Engine::send_uciok() { std::cout << "uciok" << std::endl; };
+
+void Engine::send_isready() { std::cout << "readyok" << std::endl; };
 
 void Engine::push_move_uci(std::string uci_move) {
   chess::Move move = chess::uci::uciToMove(m_board, uci_move);
