@@ -72,6 +72,54 @@ TEST_F(EngineTest, PushMove) {
   }
 };
 
+TEST_F(EngineTest, MoveComparison) {
+  chess::Move m
+      = chess::Move::make<chess::Move::NORMAL>(chess::Square::SQ_E2, chess::Square::SQ_E4);
+  PositionEvaluation null_move = PositionEvaluation();
+  PositionEvaluation max_mate_in_two
+      = PositionEvaluation(std::numeric_limits<double>::infinity(), 2, m);
+  PositionEvaluation max_mate_in_three
+      = PositionEvaluation(std::numeric_limits<double>::infinity(), 3, m);
+  PositionEvaluation min_mate_in_two
+      = PositionEvaluation(-std::numeric_limits<double>::infinity(), 2, m);
+  PositionEvaluation min_mate_in_three
+      = PositionEvaluation(-std::numeric_limits<double>::infinity(), 3, m);
+  PositionEvaluation max_score_two = PositionEvaluation(2, std::numeric_limits<int>::max(), m);
+  PositionEvaluation max_score_three = PositionEvaluation(3, std::numeric_limits<int>::max(), m);
+  PositionEvaluation min_score_two = PositionEvaluation(-2, std::numeric_limits<int>::max(), m);
+  PositionEvaluation min_score_three = PositionEvaluation(-3, std::numeric_limits<int>::max(), m);
+
+  // Check prefer move to no move
+  EXPECT_TRUE(engine.compare_moves(max_mate_in_three, null_move, true));
+  EXPECT_TRUE(engine.compare_moves(min_score_three, null_move, false));
+  EXPECT_FALSE(engine.compare_moves(null_move, max_mate_in_three, false));
+  EXPECT_FALSE(engine.compare_moves(null_move, min_score_three, true));
+
+  // Check mate > no mate
+  EXPECT_TRUE(engine.compare_moves(max_mate_in_two, max_score_two, true));
+  EXPECT_FALSE(engine.compare_moves(min_score_two, max_mate_in_two, true));
+  EXPECT_TRUE(engine.compare_moves(min_mate_in_two, max_score_two, false));
+  EXPECT_FALSE(engine.compare_moves(min_score_two, min_mate_in_two, false));
+
+  // Check no mate > opponent mate
+  EXPECT_FALSE(engine.compare_moves(max_mate_in_two, max_score_two, false));
+  EXPECT_TRUE(engine.compare_moves(min_score_two, max_mate_in_two, false));
+  EXPECT_FALSE(engine.compare_moves(min_mate_in_two, max_score_two, true));
+  EXPECT_TRUE(engine.compare_moves(min_score_two, min_mate_in_two, true));
+
+  // Check prefer less moves to mate
+  EXPECT_TRUE(engine.compare_moves(max_mate_in_two, max_mate_in_three, true));
+  EXPECT_TRUE(engine.compare_moves(min_mate_in_three, min_mate_in_two, true));
+  EXPECT_FALSE(engine.compare_moves(max_mate_in_two, max_mate_in_three, false));
+  EXPECT_FALSE(engine.compare_moves(min_mate_in_three, min_mate_in_two, false));
+
+  // Check prefer better score
+  EXPECT_TRUE(engine.compare_moves(max_score_three, max_score_two, true));
+  EXPECT_TRUE(engine.compare_moves(max_score_three, min_score_two, true));
+  EXPECT_FALSE(engine.compare_moves(max_score_three, min_score_two, false));
+  EXPECT_FALSE(engine.compare_moves(min_score_two, min_score_three, false));
+};
+
 TEST_F(EngineTest, PushTwoMoves) {
   engine.set_position_new_game();
   engine.push_move_uci("a2a3");
@@ -82,7 +130,7 @@ TEST_F(EngineTest, PushTwoMoves) {
 
 TEST_F(EngineTest, FindMoveTakeQueenSimple) {
   engine.set_position("6k1/q7/8/8/8/4Q3/8/3K4 w - - 0 1");
-  std::string engine_move = chess::uci::moveToUci(engine.find_move());
+  std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
   EXPECT_EQ(engine_move, "e3a7");
 };
 
@@ -99,7 +147,7 @@ TEST_F(EngineTest, SimpleCaptures) {
 
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
     engine.set_position(fen_and_move[i].first);
-    std::string engine_move = chess::uci::moveToUci(engine.find_move());
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
     EXPECT_EQ(engine_move, fen_and_move[i].second);
   }
 };
@@ -110,7 +158,7 @@ TEST_F(EngineTest, IntermediateCaptures) {
       std::make_pair("r1b1r1k1/pp1p1ppp/n4n2/1Nbp4/3B4/5P2/PPP1P1PP/R2K1BNR w - - 8 13", "d4c5")};
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
     engine.set_position(fen_and_move[i].first);
-    std::string engine_move = chess::uci::moveToUci(engine.find_move());
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
     EXPECT_EQ(engine_move, fen_and_move[i].second);
   }
 }

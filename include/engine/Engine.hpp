@@ -48,7 +48,6 @@ public:
 
   /**
    * @brief Interprets UCI commands and forwards to chess engine
-   * @param uci_input the command line input to be parsed as UCI
    * @return fen of the board https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
    */
   std::string get_position();
@@ -69,17 +68,29 @@ public:
 
   /**
    * @brief Choose move on board using minimax with alphabeta
+   * @param depth # of ply(s) to search w minimax, must be >= 1
    * @return Move on memeber board engine finds to be optimal
    */
-  chess::Move find_move();
+  chess::Move find_move(int depth);
+
+  /**
+   * @brief Compare two PositionEvaluation objects, with a choice to maximize or minimize.
+   * Evaluations ranked as follows:
+   * 1) Prefer Move to null move
+   * 2) Has mate > no mate > opponent has mate
+   * 3) Prefer less moves to mate (or more if opponent mate inevitable)
+   * 4) Score
+   * @param a evaluation to be considered
+   * @param b evaluation to be considered
+   * @param maximizing_player true if maximizing the choices, false if minimizing
+   * @return true if a is better, false if b is better
+   */
+  bool compare_moves(PositionEvaluation a, PositionEvaluation b, bool maximizing_player);
 
 private:
   PositionEvaluation minimax(int depth, double alpha, double beta, bool maximizing_player);
 
   PositionEvaluation static_evaluation();
-
-  // true: a should be selected
-  bool compare_moves(PositionEvaluation a, PositionEvaluation b, bool maximizing_player);
 
   int get_piece_value(chess::PieceType piece_type);
 

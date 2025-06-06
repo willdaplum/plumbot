@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <limits>
+#include <random>
+#include <algorithm>
 
 #include "engine/Command.hpp"
 
@@ -78,17 +80,45 @@ PositionEvaluation Engine::static_evaluation() {
       }
     }
   }
-  return PositionEvaluation(score, std::numeric_limits<int>::max());
+  return PositionEvaluation(score);
 };
 
 // TODO: turn alpha and beta into PositionEvaluation objects? I think?
 PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool maximizing_player) {
-  if (depth == 0 /* or node leaf?? */) {
+  if (depth == 0) {
     return static_evaluation();
+  }
+  if(m_board.isRepetition(1)) {
+    return PositionEvaluation(0);  // Draw
+  }
+  if(m_board.isHalfMoveDraw()) {
+    if(m_board.getHalfMoveDrawType().first == chess::GameResultReason::CHECKMATE) {
+      if(m_board.sideToMove() == chess::Color::WHITE) {
+        return PositionEvaluation(-std::numeric_limits<double>::infinity(), 0);  // Black wins
+      }
+      return PositionEvaluation(std::numeric_limits<double>::infinity(), 0);  // White wins
+    }
+    return PositionEvaluation(0);  // Draw
   }
 
   chess::Movelist moves;
   chess::movegen::legalmoves(moves, m_board);
+
+  
+  if(moves.size() == 0) { 
+    if(m_board.inCheck()) {  // checkmate
+      if(m_board.sideToMove() == chess::Color::WHITE) {
+        return PositionEvaluation(-std::numeric_limits<double>::infinity(), 0);  // Black wins
+      }
+      return PositionEvaluation(std::numeric_limits<double>::infinity(), 0);  // White wins
+    }
+    return PositionEvaluation(0);  // Draw
+  }
+
+  std::random_device rd;
+  std::mt19937 g(rd());
+  std::shuffle(moves.begin(), moves.end(), g);
+
   PositionEvaluation eval = PositionEvaluation();
   if (maximizing_player) {
     eval.score = -std::numeric_limits<double>::infinity();
@@ -97,15 +127,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       std::string move_uci = chess::uci::moveToUci(*it);
       PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, false);
       cur_eval.move = *it;
-      if (m_debug_mode) {
-        if (depth == 2) {
-          std::cout << "-";
-        } else if (depth == 1) {
-          std::cout << "--";
-        }
-        std::cout << "d: " << depth << " move: " << move_uci << " score: " << cur_eval.score
-                  << std::endl;
-      }
+      
       if (compare_moves(cur_eval, eval, maximizing_player)) {
         eval = cur_eval;
       }
@@ -115,6 +137,9 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       }
       alpha = std::max(alpha, eval.score);
     }
+    if(eval.moves_to_mate != std::numeric_limits<int>::max()) {
+        eval.moves_to_mate++;
+    }
     return eval;
   } else {  // minimizing player
     eval.score = std::numeric_limits<double>::infinity();
@@ -123,15 +148,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       std::string move_uci = chess::uci::moveToUci(*it);
       PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, true);
       cur_eval.move = *it;
-      if (m_debug_mode) {
-        if (depth == 2) {
-          std::cout << "-";
-        } else if (depth == 1) {
-          std::cout << "--";
-        }
-        std::cout << "d: " << depth << " move: " << move_uci << " score: " << cur_eval.score
-                  << std::endl;
-      }
+      
       if (compare_moves(cur_eval, eval, maximizing_player)) {
         eval = cur_eval;
       }
@@ -141,14 +158,29 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       }
       beta = std::min(beta, eval.score);
     }
+    if(eval.moves_to_mate != std::numeric_limits<int>::max()) {
+        eval.moves_to_mate++;
+    }
     return eval;
   }
 };
 
-chess::Move Engine::find_move() {
+/*
+if (m_debug_mode) {
+        if (depth == 2) {
+          std::cout << "-";
+        } else if (depth == 1) {
+          std::cout << "--";
+        }
+        std::cout << "d: " << depth << " move: " << move_uci << " score: " << cur_eval.score
+                  << std::endl;
+      }
+*/
+
+chess::Move Engine::find_move(int depth) {
   PositionEvaluation best_move = PositionEvaluation();
   bool maximizing_player = m_board.sideToMove() == chess::Color::WHITE;
-  for (size_t ply = 1; ply < 7; ++ply) {
+  for (int ply = 1; ply <= depth; ++ply) {
     best_move = minimax(ply, -std::numeric_limits<double>::infinity(),
                         std::numeric_limits<double>::infinity(), maximizing_player);
   }
@@ -166,7 +198,12 @@ bool Engine::compare_moves(PositionEvaluation a, PositionEvaluation b, bool maxi
     if (a.moves_to_mate == b.moves_to_mate) {
       return a.score > b.score;
     }
-    return a.moves_to_mate < b.moves_to_mate;
+    if(a.score > b.score) {  // checkmate found
+        return a.moves_to_mate > b.moves_to_mate;
+    }
+    else {
+        return a.moves_to_mate < b.moves_to_mate;
+    }
   } else {  // minimizing_player
     if (a.moves_to_mate == b.moves_to_mate) {
       return a.score < b.score;
