@@ -18,10 +18,10 @@ std::vector<std::string> EngineInterface::vectorize_options_with_fen(
     const std::string uci_options) {
   std::vector<std::string> v_options = vectorize_options(uci_options);
   if (v_options.at(0) != "startpos") {
-    for (size_t i = 1; i < 6; ++i) {  // re-form fen as 0 index option
-      v_options.at(0) += " " + v_options.at(i);
+    for (size_t i = 2; i < 7; ++i) {  // re-form fen as 1 indexed option
+      v_options.at(1) += " " + v_options.at(i);
     }
-    v_options.erase(v_options.begin() + 1, v_options.begin() + 6);
+    v_options.erase(v_options.begin() + 2, v_options.begin() + 7);
   }
   return v_options;
 };
@@ -100,7 +100,7 @@ void EngineInterface::position_cmd(const std::vector<std::string> &uci_options) 
   if (uci_options.at(0) == "startpos") {
     plumbot.set_position_new_game();
   } else {
-    plumbot.set_position(uci_options[0]);
+    plumbot.set_position(uci_options[1]);
   }
   for (size_t i = 2; i < uci_options.size(); ++i) {  // moves start after fen
     plumbot.push_move_uci(uci_options[i]);
