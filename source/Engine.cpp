@@ -198,16 +198,41 @@ bool Engine::compare_moves(PositionEvaluation a, PositionEvaluation b, bool maxi
     if (a.moves_to_mate == b.moves_to_mate) {
       return a.score > b.score;
     }
-    if(a.score > b.score) {  // checkmate found
-        return a.moves_to_mate > b.moves_to_mate;
-    }
-    else {
-        return a.moves_to_mate < b.moves_to_mate;
+    else {  // must be a checkmate
+        if(a.score == b.score) {
+            if(a.score < 0) {
+                return a.moves_to_mate > b.moves_to_mate;
+            }
+            else {
+                return a.moves_to_mate < b.moves_to_mate;
+            }    
+        }
+        else if(a.score == std::numeric_limits<double>::infinity() || b.score == -std::numeric_limits<double>::infinity()) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
   } else {  // minimizing_player
     if (a.moves_to_mate == b.moves_to_mate) {
       return a.score < b.score;
     }
-    return a.moves_to_mate > b.moves_to_mate;
+    else {  // must be a checkmate
+        if(a.score == b.score) {
+            if(a.score < 0) {
+                return a.moves_to_mate < b.moves_to_mate;
+            }
+            else {
+                return a.moves_to_mate > b.moves_to_mate;
+            }    
+        }
+        else if(a.score == -std::numeric_limits<double>::infinity() || b.score == std::numeric_limits<double>::infinity()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
   }
 }
