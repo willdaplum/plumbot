@@ -139,7 +139,7 @@ TEST_F(EngineTest, SimpleCaptures) {
       std::make_pair("6k1/8/8/8/8/8/3q4/3K4 w - - 0 1", "d1d2"),
       std::make_pair("6k1/1q6/8/8/8/5B2/8/3K4 w - - 0 1", "f3b7"),
       std::make_pair("6k1/8/2n5/8/3R4/8/8/3K4 b - - 0 1", "c6d4"),
-      std::make_pair("6k1/P3r3/8/8/8/8/3P4/3K4 b - - 0 1", "e7a7"),
+      std::make_pair("2B3k1/P3r3/8/8/8/8/3P4/3K4 b - - 0 1", "e7a7"),
       std::make_pair("6k1/4q3/8/8/1N5Q/8/8/3K4 b - - 0 1", "e7h4"),
       std::make_pair("4k3/8/8/2b1r3/3P4/8/3K4/8 w - - 0 1", "d4e5"),
       std::make_pair("2r5/3P4/7k/8/8/8/3K4/8 w - - 0 1", "d7c8q"),
