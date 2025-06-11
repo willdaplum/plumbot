@@ -20,50 +20,50 @@ PositionEvaluation::PositionEvaluation() {
   score = 0;
   moves_to_mate = std::numeric_limits<int>::max();
   move = chess::Move::NO_MOVE;
-};
+}
 
 PositionEvaluation::PositionEvaluation(double score) : score(score) {
   moves_to_mate = std::numeric_limits<int>::max();
   move = chess::Move::NO_MOVE;
-};
+}
 
 PositionEvaluation::PositionEvaluation(double score, int moves_to_mate)
     : score(score), moves_to_mate(moves_to_mate) {
   move = chess::Move::NO_MOVE;
-};
+}
 
 PositionEvaluation::PositionEvaluation(double score, int moves_to_mate, chess::Move move)
-    : score(score), moves_to_mate(moves_to_mate), move(move) {};
+    : score(score), moves_to_mate(moves_to_mate), move(move) {}
 
 void Engine::send_id() {
   std::cout << "id name " << m_id_name << std::endl;
   std::cout << "id author " << m_id_author << std::endl;
-};
+}
 
-void Engine::set_debug(DebugOption debug_mode) { m_debug_mode = static_cast<int>(debug_mode); };
+void Engine::set_debug(DebugOption debug_mode) { m_debug_mode = static_cast<int>(debug_mode); }
 
-bool Engine::get_debug() { return m_debug_mode; };
+bool Engine::get_debug() { return m_debug_mode; }
 
-void Engine::send_info(std::string info) { std::cout << "info " << info << std::endl; };
+void Engine::send_info(std::string info) { std::cout << "info " << info << std::endl; }
 
-void Engine::send_uciok() { std::cout << "uciok" << std::endl; };
+void Engine::send_uciok() { std::cout << "uciok" << std::endl; }
 
-void Engine::send_isready() { std::cout << "readyok" << std::endl; };
+void Engine::send_isready() { std::cout << "readyok" << std::endl; }
 
 void Engine::push_move_uci(std::string uci_move) {
   chess::Move move = chess::uci::uciToMove(m_board, uci_move);
   m_board.makeMove(move);
-};
+}
 
-void Engine::set_position(std::string fen) { m_board.setFen(fen); };
+void Engine::set_position(std::string fen) { m_board.setFen(fen); }
 
-void Engine::set_position_new_game() { set_position(chess::constants::STARTPOS); };
+void Engine::set_position_new_game() { set_position(chess::constants::STARTPOS); }
 
-std::string Engine::get_position() { return m_board.getFen(); };
+std::string Engine::get_position() { return m_board.getFen(); }
 
 int Engine::get_piece_value(chess::PieceType piece_type) {
   return m_piece_values[static_cast<int>(piece_type)];
-};
+}
 
 // NOTE: does not check for checkmate, will always be intmax
 // NOTE: board with white up material will always be positive, black negative
@@ -81,7 +81,7 @@ PositionEvaluation Engine::static_evaluation() {
     }
   }
   return PositionEvaluation(score);
-};
+}
 
 // TODO: turn alpha and beta into PositionEvaluation objects? I think?
 PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool maximizing_player) {
@@ -163,7 +163,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     }
     return eval;
   }
-};
+}
 
 /*
 if (m_debug_mode) {

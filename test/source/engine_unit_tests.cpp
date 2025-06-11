@@ -24,7 +24,7 @@ TEST_F(EngineTest, SetDebugFlag) {
   EXPECT_EQ(engine.get_debug(), false);
   engine.set_debug(DebugOption::ON);
   EXPECT_EQ(engine.get_debug(), true);
-};
+}
 
 TEST_F(EngineTest, SetPosition) {
   std::vector<std::string> fens
@@ -45,7 +45,7 @@ TEST_F(EngineTest, SetPosition) {
   }
   engine.set_position_new_game();
   EXPECT_EQ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", engine.get_position());
-};
+}
 
 TEST_F(EngineTest, PushMove) {
   std::vector<std::pair<std::string, std::string>> move_and_fen = {
@@ -70,7 +70,7 @@ TEST_F(EngineTest, PushMove) {
     engine.push_move_uci(move_and_fen[i].first);
     EXPECT_EQ(engine.get_position(), move_and_fen[i].second);
   }
-};
+}
 
 TEST_F(EngineTest, MoveComparison) {
   chess::Move m
@@ -118,7 +118,7 @@ TEST_F(EngineTest, MoveComparison) {
   EXPECT_TRUE(engine.compare_moves(max_score_three, min_score_two, true));
   EXPECT_FALSE(engine.compare_moves(max_score_three, min_score_two, false));
   EXPECT_FALSE(engine.compare_moves(min_score_two, min_score_three, false));
-};
+}
 
 TEST_F(EngineTest, PushTwoMoves) {
   engine.set_position_new_game();
@@ -126,13 +126,13 @@ TEST_F(EngineTest, PushTwoMoves) {
   EXPECT_EQ(engine.get_position(), "rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1");
   engine.push_move_uci("f7f6");
   EXPECT_EQ(engine.get_position(), "rnbqkbnr/ppppp1pp/5p2/8/8/P7/1PPPPPPP/RNBQKBNR w KQkq - 0 2");
-};
+}
 
 TEST_F(EngineTest, FindMoveTakeQueenSimple) {
   engine.set_position("6k1/q7/8/8/8/4Q3/8/3K4 w - - 0 1");
   std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
   EXPECT_EQ(engine_move, "e3a7");
-};
+}
 
 TEST_F(EngineTest, SimpleCaptures) {
   std::vector<std::pair<std::string, std::string>> fen_and_move = {
@@ -150,7 +150,7 @@ TEST_F(EngineTest, SimpleCaptures) {
     std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
     EXPECT_EQ(engine_move, fen_and_move[i].second);
   }
-};
+}
 
 TEST_F(EngineTest, IntermediateCaptures) {
   std::vector<std::pair<std::string, std::string>> fen_and_move = {

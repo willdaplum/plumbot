@@ -12,7 +12,7 @@ std::vector<std::string> EngineInterface::vectorize_options(const std::string uc
   std::istream_iterator<std::string> end;
   std::vector<std::string> v_options(begin, end);
   return v_options;
-};
+}
 
 std::vector<std::string> EngineInterface::vectorize_options_with_fen(
     const std::string uci_options) {
@@ -24,7 +24,7 @@ std::vector<std::string> EngineInterface::vectorize_options_with_fen(
     v_options.erase(v_options.begin() + 2, v_options.begin() + 7);
   }
   return v_options;
-};
+}
 
 void EngineInterface::process_command(const std::string uci_input) {
   const std::string delimiter = " ";
@@ -69,12 +69,12 @@ void EngineInterface::process_command(const std::string uci_input) {
     case UCICommand::UCINEWGAME:
       break;
   }
-};
+}
 
 void EngineInterface::uci_cmd() { 
   plumbot.send_id(); 
   plumbot.send_uciok();
-};
+}
 
 void EngineInterface::debug_cmd(const std::vector<std::string> &uci_options) {
   if (uci_options.size() != 1) {
@@ -87,11 +87,11 @@ void EngineInterface::debug_cmd(const std::vector<std::string> &uci_options) {
   } else {
     // TODO: error
   }
-};
+}
 
 void EngineInterface::isready_cmd() {
   plumbot.send_isready();
-};
+}
 
 void EngineInterface::position_cmd(const std::vector<std::string> &uci_options) {
   if (uci_options.size() == 0) {
@@ -105,7 +105,7 @@ void EngineInterface::position_cmd(const std::vector<std::string> &uci_options) 
   for (size_t i = 2; i < uci_options.size(); ++i) {  // moves start after fen
     plumbot.push_move_uci(uci_options[i]);
   }
-};
+}
 
 void EngineInterface::go_cmd() {
   chess::Move move = plumbot.find_move(5);
