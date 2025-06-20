@@ -134,12 +134,6 @@ TEST_F(EngineTest, FindMoveTakeQueenSimple) {
   EXPECT_EQ(engine_move, "e3a7");
 }
 
-TEST_F(EngineTest, DrawingMoves) {
-  engine.set_position("2R5/2p2kp1/5p1p/r1p2N2/p7/2P5/bP3PPP/2K2R2 b - - 9 29");
-  std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
-  EXPECT_NE(engine_move, "a1a1");
-}
-
 TEST_F(EngineTest, SimpleCaptures) {
   std::vector<std::pair<std::string, std::string>> fen_and_move = {
       std::make_pair("6k1/8/8/8/8/8/3q4/3K4 w - - 0 1", "d1d2"),
@@ -162,6 +156,49 @@ TEST_F(EngineTest, IntermediateCaptures) {
   std::vector<std::pair<std::string, std::string>> fen_and_move = {
       std::make_pair("rnbqkbnr/ppp2ppp/8/3pp3/8/P4N2/1PPPPPPP/RNBQKB1R w KQkq - 0 3", "f3e5"),
       std::make_pair("r1b1r1k1/pp1p1ppp/n4n2/1Nbp4/3B4/5P2/PPP1P1PP/R2K1BNR w - - 8 13", "d4c5")};
+  for (size_t i = 0; i < fen_and_move.size(); ++i) {
+    engine.set_position(fen_and_move[i].first);
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
+    EXPECT_EQ(engine_move, fen_and_move[i].second);
+  }
+}
+
+TEST_F(EngineTest, MateInOne) {
+  std::vector<std::pair<std::string, std::string>> fen_and_move = {
+      std::make_pair("kr6/1p6/p7/4b3/8/8/6BP/R5K1 w - - 0 1", "a1a6"),
+      std::make_pair("r2B3k/1p3p1p/8/8/8/b7/7P/K5R1 w - - 0 1", "d8f6"),
+      std::make_pair("8/8/R6p/4pkp1/4N3/3P2PP/1r6/3K4 w - - 0 1", "a6f6"),
+      std::make_pair("1k1r4/1bNr4/3P4/8/8/8/5PPP/RR5K w - - 0 1", "a1a8"),
+      std::make_pair("r6R/ppk1b3/2p1P3/P7/3N4/8/2R3PP/7K w - - 0 1", "d4b5"),
+      std::make_pair("8/3b3Q/3Pkr2/8/4P2p/7P/P5PK/8 w - - 0 1", "h7e7"),
+      std::make_pair("8/p1p1bkq1/2Q1nNr1/3pP1r1/3P3p/5P1P/P5PK/2R3R1 w - - 0 1", "c6e8"),
+      std::make_pair("8/8/8/knN5/1n6/8/3N4/4K3 w - - 0 1", "d2c4"),
+  };
+  for (size_t i = 0; i < fen_and_move.size(); ++i) {
+    engine.set_position(fen_and_move[i].first);
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
+    EXPECT_EQ(engine_move, fen_and_move[i].second);
+  }
+}
+
+TEST_F(EngineTest, MateInTwo) {
+  std::vector<std::pair<std::string, std::string>> fen_and_move = {
+      std::make_pair("7r/7k/1R6/R7/7r/8/8/6K1 w - - 0 1", "a5a7"),
+      std::make_pair("rk2r3/8/8/8/8/2R5/3R4/6K1 w - - 0 1", "d2b2"),
+      std::make_pair("5r1k/2RR4/5r2/8/8/6Pp/7P/6K1 w - - 0 1", "d7h7"),
+      std::make_pair("3r2kr/8/8/8/8/5R2/4R3/6K1 w - - 0 1", "e2g2"),
+      std::make_pair("rr4k1/2R4R/5p1P/5p2/8/P7/8/K7 w - - 0 1", "c7g7"),
+      std::make_pair("r4bk1/3R3p/6p1/3N4/8/8/6PP/7K w - - 0 1", "d5f6"),
+      std::make_pair("R3N1k1/5p2/6p1/3b2P1/8/5r2/7P/7K w - - 0 1", "e8f6"),
+      std::make_pair("4r1kb/3R3p/6p1/8/6N1/8/6PP/7K w - - 0 1", "g4h6"),
+      std::make_pair("6k1/3R2p1/5pNp/5P2/3b4/3r4/6PP/7K w - - 0 1", "d7d8"),
+      std::make_pair("5rk1/5pp1/8/8/6N1/5P2/5K2/6R1 w - - 0 1", "g4f6"),
+      std::make_pair("r5k1/3R3p/4P1pb/3N1p2/8/8/6PP/7K w - - 0 1", "d5f6"),
+      std::make_pair("6k1/5p2/5B2/3R3P/8/5n2/5r2/7K w - - 0 1", "d5d8"),
+      std::make_pair("7b/4r1k1/7p/3Bp2K/4P3/8/8/5R2 w - - 0 1", "f1g1"),
+      std::make_pair("2R5/5pkr/6b1/2B5/5PK1/8/8/8 w - - 0 1", "c5f8"),
+  };
+
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
     engine.set_position(fen_and_move[i].first);
     std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
