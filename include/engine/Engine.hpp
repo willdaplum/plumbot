@@ -58,13 +58,13 @@ public:
    */
   void push_move_uci(std::string uci_move);
 
-  void send_id();
+  void send_id(std::ostream& os = std::cout);
 
-  void send_info(std::string info);
+  void send_info(std::string info, std::ostream& os = std::cout);
 
-  void send_uciok();
+  void send_uciok(std::ostream& os = std::cout);
 
-  void send_isready();
+  void send_isready(std::ostream& os = std::cout);
 
   /**
    * @brief Choose move on board using minimax with alphabeta

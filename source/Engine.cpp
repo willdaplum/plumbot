@@ -1,9 +1,9 @@
 #include "engine/Engine.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <limits>
 #include <random>
-#include <algorithm>
 
 #include "engine/Command.hpp"
 
@@ -35,20 +35,20 @@ PositionEvaluation::PositionEvaluation(double score, int moves_to_mate)
 PositionEvaluation::PositionEvaluation(double score, int moves_to_mate, chess::Move move)
     : score(score), moves_to_mate(moves_to_mate), move(move) {}
 
-void Engine::send_id() {
-  std::cout << "id name " << m_id_name << std::endl;
-  std::cout << "id author " << m_id_author << std::endl;
+void Engine::send_id(std::ostream& os) {
+  os << "id name " << m_id_name << std::endl;
+  os << "id author " << m_id_author << std::endl;
 }
 
 void Engine::set_debug(DebugOption debug_mode) { m_debug_mode = static_cast<int>(debug_mode); }
 
 bool Engine::get_debug() { return m_debug_mode; }
 
-void Engine::send_info(std::string info) { std::cout << "info " << info << std::endl; }
+void Engine::send_info(std::string info, std::ostream& os) { os << "info " << info << std::endl; }
 
-void Engine::send_uciok() { std::cout << "uciok" << std::endl; }
+void Engine::send_uciok(std::ostream& os) { os << "uciok" << std::endl; }
 
-void Engine::send_isready() { std::cout << "readyok" << std::endl; }
+void Engine::send_isready(std::ostream& os) { os << "readyok" << std::endl; }
 
 void Engine::push_move_uci(std::string uci_move) {
   chess::Move move = chess::uci::uciToMove(m_board, uci_move);
@@ -88,12 +88,12 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
   if (depth == 0) {
     return static_evaluation();
   }
-  if(m_board.isRepetition(1)) {
+  if (m_board.isRepetition()) {
     return PositionEvaluation(0);  // Draw
   }
-  if(m_board.isHalfMoveDraw()) {
-    if(m_board.getHalfMoveDrawType().first == chess::GameResultReason::CHECKMATE) {
-      if(m_board.sideToMove() == chess::Color::WHITE) {
+  if (m_board.isHalfMoveDraw()) {
+    if (m_board.getHalfMoveDrawType().first == chess::GameResultReason::CHECKMATE) {
+      if (m_board.sideToMove() == chess::Color::WHITE) {
         return PositionEvaluation(-std::numeric_limits<double>::infinity(), 0);  // Black wins
       }
       return PositionEvaluation(std::numeric_limits<double>::infinity(), 0);  // White wins
@@ -104,10 +104,9 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
   chess::Movelist moves;
   chess::movegen::legalmoves(moves, m_board);
 
-  
-  if(moves.size() == 0) { 
-    if(m_board.inCheck()) {  // checkmate
-      if(m_board.sideToMove() == chess::Color::WHITE) {
+  if (moves.size() == 0) {
+    if (m_board.inCheck()) {  // checkmate
+      if (m_board.sideToMove() == chess::Color::WHITE) {
         return PositionEvaluation(-std::numeric_limits<double>::infinity(), 0);  // Black wins
       }
       return PositionEvaluation(std::numeric_limits<double>::infinity(), 0);  // White wins
@@ -127,7 +126,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       std::string move_uci = chess::uci::moveToUci(*it);
       PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, false);
       cur_eval.move = *it;
-      
+
       if (compare_moves(cur_eval, eval, maximizing_player)) {
         eval = cur_eval;
       }
@@ -137,8 +136,8 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       }
       alpha = std::max(alpha, eval.score);
     }
-    if(eval.moves_to_mate != std::numeric_limits<int>::max()) {
-        eval.moves_to_mate++;
+    if (eval.moves_to_mate != std::numeric_limits<int>::max()) {
+      eval.moves_to_mate++;
     }
     return eval;
   } else {  // minimizing player
@@ -148,7 +147,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       std::string move_uci = chess::uci::moveToUci(*it);
       PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, true);
       cur_eval.move = *it;
-      
+
       if (compare_moves(cur_eval, eval, maximizing_player)) {
         eval = cur_eval;
       }
@@ -158,8 +157,8 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
       }
       beta = std::min(beta, eval.score);
     }
-    if(eval.moves_to_mate != std::numeric_limits<int>::max()) {
-        eval.moves_to_mate++;
+    if (eval.moves_to_mate != std::numeric_limits<int>::max()) {
+      eval.moves_to_mate++;
     }
     return eval;
   }
@@ -197,42 +196,36 @@ bool Engine::compare_moves(PositionEvaluation a, PositionEvaluation b, bool maxi
   if (maximizing_player) {
     if (a.moves_to_mate == b.moves_to_mate) {
       return a.score > b.score;
-    }
-    else {  // must be a checkmate
-        if(a.score == b.score) {
-            if(a.score < 0) {
-                return a.moves_to_mate > b.moves_to_mate;
-            }
-            else {
-                return a.moves_to_mate < b.moves_to_mate;
-            }    
+    } else {  // must be a checkmate
+      if (a.score == b.score) {
+        if (a.score < 0) {
+          return a.moves_to_mate > b.moves_to_mate;
+        } else {
+          return a.moves_to_mate < b.moves_to_mate;
         }
-        else if(a.score == std::numeric_limits<double>::infinity() || b.score == -std::numeric_limits<double>::infinity()) {
-            return true;
-        }
-        else {
-            return false;
-        }
+      } else if (a.score == std::numeric_limits<double>::infinity()
+                 || b.score == -std::numeric_limits<double>::infinity()) {
+        return true;
+      } else {
+        return false;
+      }
     }
   } else {  // minimizing_player
     if (a.moves_to_mate == b.moves_to_mate) {
       return a.score < b.score;
-    }
-    else {  // must be a checkmate
-        if(a.score == b.score) {
-            if(a.score < 0) {
-                return a.moves_to_mate < b.moves_to_mate;
-            }
-            else {
-                return a.moves_to_mate > b.moves_to_mate;
-            }    
+    } else {  // must be a checkmate
+      if (a.score == b.score) {
+        if (a.score < 0) {
+          return a.moves_to_mate < b.moves_to_mate;
+        } else {
+          return a.moves_to_mate > b.moves_to_mate;
         }
-        else if(a.score == -std::numeric_limits<double>::infinity() || b.score == std::numeric_limits<double>::infinity()) {
-            return true;
-        }
-        else {
-            return false;
-        }
+      } else if (a.score == -std::numeric_limits<double>::infinity()
+                 || b.score == std::numeric_limits<double>::infinity()) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 }

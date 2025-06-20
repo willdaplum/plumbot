@@ -26,29 +26,29 @@ std::vector<std::string> EngineInterface::vectorize_options_with_fen(
   return v_options;
 }
 
-void EngineInterface::process_command(const std::string uci_input) {
+void EngineInterface::process_command(const std::string uci_input, std::ostream& os) {
   const std::string delimiter = " ";
   std::string uci_command_text = uci_input.substr(0, uci_input.find(delimiter));
   std::string uci_options = uci_input.substr(uci_input.find(delimiter) + 1);
 
   auto uci_command_it = uci_commands.find(uci_command_text);
   if (uci_command_it == uci_commands.end()) {
-    // TODO: this is an error
+    os << "HELP THIS IS AN ERROR:";
   }
   UCICommand uci_command = uci_command_it->second;
 
   switch (uci_command) {
     default:
-      std::cout << "unrecognized command\n";
+      os << "unrecognized command\n";
       break;
     case UCICommand::DEBUG:
       debug_cmd(vectorize_options(uci_options));
       break;
     case UCICommand::GO:
-      go_cmd();
+      go_cmd(os);
       break;
     case UCICommand::ISREADY:
-      isready_cmd();
+      isready_cmd(os);
       break;
     case UCICommand::PONDERHIT:
       break;
@@ -64,19 +64,19 @@ void EngineInterface::process_command(const std::string uci_input) {
     case UCICommand::STOP:
       break;
     case UCICommand::UCI:
-      uci_cmd();
+      uci_cmd(os);
       break;
     case UCICommand::UCINEWGAME:
       break;
   }
 }
 
-void EngineInterface::uci_cmd() { 
-  plumbot.send_id(); 
-  plumbot.send_uciok();
+void EngineInterface::uci_cmd(std::ostream& os) {
+  plumbot.send_id(os);
+  plumbot.send_uciok(os);
 }
 
-void EngineInterface::debug_cmd(const std::vector<std::string> &uci_options) {
+void EngineInterface::debug_cmd(const std::vector<std::string>& uci_options) {
   if (uci_options.size() != 1) {
     // TODO: error
   }
@@ -89,11 +89,9 @@ void EngineInterface::debug_cmd(const std::vector<std::string> &uci_options) {
   }
 }
 
-void EngineInterface::isready_cmd() {
-  plumbot.send_isready();
-}
+void EngineInterface::isready_cmd(std::ostream& os) { plumbot.send_isready(os); }
 
-void EngineInterface::position_cmd(const std::vector<std::string> &uci_options) {
+void EngineInterface::position_cmd(const std::vector<std::string>& uci_options) {
   if (uci_options.size() == 0) {
     // TODO: error
   }
@@ -107,7 +105,7 @@ void EngineInterface::position_cmd(const std::vector<std::string> &uci_options) 
   }
 }
 
-void EngineInterface::go_cmd() {
+void EngineInterface::go_cmd(std::ostream& os) {
   chess::Move move = plumbot.find_move(5);
-  std::cout << "bestmove " << chess::uci::moveToUci(move) << std::endl;
+  os << "bestmove " << chess::uci::moveToUci(move) << std::endl;
 }

@@ -12,20 +12,21 @@ public:
   /**
    * @brief Interprets UCI commands and forwards to chess engine
    * @param uci_input the command line input to be parsed as UCI
+   * @param os stream for command output, defaults to std::cout (use stringstream for testing)
    * @return a string of expected UCI output
    */
-  void process_command(const std::string uci_input);
+  void process_command(const std::string uci_input, std::ostream& os = std::cout);
 
 private:
   std::vector<std::string> vectorize_options(const std::string uci_options);
 
   std::vector<std::string> vectorize_options_with_fen(const std::string uci_options);
 
-  void uci_cmd();
+  void uci_cmd(std::ostream& os = std::cout);
 
   void debug_cmd(const std::vector<std::string> &uci_options);
 
-  void isready_cmd();
+  void isready_cmd(std::ostream& os = std::cout);
 
   std::string setoption_cmd();
 
@@ -35,7 +36,7 @@ private:
 
   void position_cmd(const std::vector<std::string> &uci_options);
 
-  void go_cmd();
+  void go_cmd(std::ostream& os = std::cout);
 
   std::string stop_cmd();
 

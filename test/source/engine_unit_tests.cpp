@@ -134,6 +134,12 @@ TEST_F(EngineTest, FindMoveTakeQueenSimple) {
   EXPECT_EQ(engine_move, "e3a7");
 }
 
+TEST_F(EngineTest, DrawingMoves) {
+  engine.set_position("2R5/2p2kp1/5p1p/r1p2N2/p7/2P5/bP3PPP/2K2R2 b - - 9 29");
+  std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
+  EXPECT_NE(engine_move, "a1a1");
+}
+
 TEST_F(EngineTest, SimpleCaptures) {
   std::vector<std::pair<std::string, std::string>> fen_and_move = {
       std::make_pair("6k1/8/8/8/8/8/3q4/3K4 w - - 0 1", "d1d2"),
