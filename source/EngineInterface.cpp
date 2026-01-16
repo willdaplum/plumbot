@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <thread>
 
 #include "engine/Command.hpp"
 
@@ -45,7 +46,7 @@ void EngineInterface::process_command(const std::string uci_input, std::ostream&
       debug_cmd(vectorize_options(uci_options));
       break;
     case UCICommand::GO:
-      go_cmd(os);
+      go_cmd(vectorize_options(uci_options), os);
       break;
     case UCICommand::ISREADY:
       isready_cmd(os);
@@ -105,7 +106,24 @@ void EngineInterface::position_cmd(const std::vector<std::string>& uci_options) 
   }
 }
 
-void EngineInterface::go_cmd(std::ostream& os) {
-  chess::Move move = plumbot.find_move(5);
-  os << "bestmove " << chess::uci::moveToUci(move) << std::endl;
+void EngineInterface::go_cmd(const std::vector<std::string>& uci_options, std::ostream& os ) {
+  int depth = 1;
+  if(uci_options.size() < 1) {
+    os << "error: go command requires at least one option" << std::endl;
+    return;
+  } else if(uci_options.at(0) == "infinite") {
+    depth = std::numeric_limits<int>::max();
+  }
+  else {
+    depth = std::stoi(uci_options.at(0));
+  }
+  std::thread search_thread([&]() {
+    plumbot.find_move(depth);
+  });
+  search_thread.join();
+  os << "bestmove " << chess::uci::moveToUci(plumbot.get_best_move()) << std::endl;
+}
+
+void EngineInterface::stop_cmd() {  
+  plumbot.stop_search();
 }
