@@ -226,3 +226,5 @@ bool Engine::compare_moves(PositionEvaluation a, PositionEvaluation b, bool maxi
 chess::Move Engine::get_best_move() { return m_best_move; }
 
 void Engine::stop_search() { m_stop_search = true; }
+
+chess::Board Engine::get_board() { return m_board; }

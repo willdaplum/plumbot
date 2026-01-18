@@ -52,6 +52,8 @@ public:
    */
   std::string get_position();
 
+  chess::Board get_board();
+
   /**
    * @brief Make move on engine board
    * @param uci_move move in UCI format
