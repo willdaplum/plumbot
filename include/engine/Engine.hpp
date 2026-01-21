@@ -69,9 +69,10 @@ public:
   /**
    * @brief Choose move on board using minimax with alphabeta
    * @param depth # of ply(s) to search w minimax, must be >= 1
+   * @param randomize true: choose random move with equal value, false: first move. Set to false for testing/debugging
    * @return Move on memeber board engine finds to be optimal
    */
-  chess::Move find_move(int depth);
+  chess::Move find_move(int depth, bool randomize);
 
   /**
    * @brief Compare two PositionEvaluation objects, with a choice to maximize or minimize.
@@ -88,7 +89,7 @@ public:
   bool compare_moves(PositionEvaluation a, PositionEvaluation b, bool maximizing_player);
 
 private:
-  PositionEvaluation minimax(int depth, double alpha, double beta, bool maximizing_player);
+  PositionEvaluation minimax(int depth, double alpha, double beta, bool maximizing_player, bool randomize);
 
   PositionEvaluation static_evaluation();
 

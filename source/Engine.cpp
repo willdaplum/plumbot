@@ -84,7 +84,7 @@ PositionEvaluation Engine::static_evaluation() {
 }
 
 // TODO: turn alpha and beta into PositionEvaluation objects? I think?
-PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool maximizing_player) {
+PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool maximizing_player, bool randomize) {
   if (depth == 0) {
     return static_evaluation();
   }
@@ -114,9 +114,11 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     return PositionEvaluation(0);  // Draw
   }
 
-  std::random_device rd;
-  std::mt19937 g(rd());
-  std::shuffle(moves.begin(), moves.end(), g);
+  if(randomize) {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(moves.begin(), moves.end(), g);
+  }
 
   PositionEvaluation eval = PositionEvaluation();
   if (maximizing_player) {
@@ -124,7 +126,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     for (auto it = moves.begin(); it != moves.end(); ++it) {
       m_board.makeMove(*it);
       std::string move_uci = chess::uci::moveToUci(*it);
-      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, false);
+      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, false, randomize);
       cur_eval.move = *it;
 
       if (compare_moves(cur_eval, eval, maximizing_player)) {
@@ -145,7 +147,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     for (auto it = moves.begin(); it != moves.end(); ++it) {
       m_board.makeMove(*it);
       std::string move_uci = chess::uci::moveToUci(*it);
-      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, true);
+      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, true, randomize);
       cur_eval.move = *it;
 
       if (compare_moves(cur_eval, eval, maximizing_player)) {
@@ -176,12 +178,12 @@ if (m_debug_mode) {
       }
 */
 
-chess::Move Engine::find_move(int depth) {
+chess::Move Engine::find_move(int depth, bool randomize) {
   PositionEvaluation best_move = PositionEvaluation();
   bool maximizing_player = m_board.sideToMove() == chess::Color::WHITE;
   for (int ply = 1; ply <= depth; ++ply) {
     best_move = minimax(ply, -std::numeric_limits<double>::infinity(),
-                        std::numeric_limits<double>::infinity(), maximizing_player);
+                        std::numeric_limits<double>::infinity(), maximizing_player, randomize);
   }
   return best_move.move;
 }

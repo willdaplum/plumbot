@@ -106,6 +106,6 @@ void EngineInterface::position_cmd(const std::vector<std::string>& uci_options) 
 }
 
 void EngineInterface::go_cmd(std::ostream& os) {
-  chess::Move move = plumbot.find_move(5);
+  chess::Move move = plumbot.find_move(5, true);
   os << "bestmove " << chess::uci::moveToUci(move) << std::endl;
 }
