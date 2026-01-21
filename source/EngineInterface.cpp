@@ -46,8 +46,11 @@ void EngineInterface::process_command(const std::string uci_input, std::ostream&
       debug_cmd(vectorize_options(uci_options));
       break;
     case UCICommand::GO:
-      go_cmd(vectorize_options(uci_options), os);
+    {
+      std::thread go_thread([&]() { go_cmd(vectorize_options(uci_options), os); });
+      go_thread.detach();
       break;
+    }
     case UCICommand::ISREADY:
       isready_cmd(os);
       break;
@@ -164,8 +167,7 @@ GoParameters EngineInterface::parse_go_options(const std::vector<std::string>& u
 void EngineInterface::go_cmd(const std::vector<std::string>& uci_options, std::ostream& os) {
   GoParameters go_params = parse_go_options(uci_options);
 
-  std::thread search_thread([&]() { plumbot.find_move(go_params.depth); });
-  search_thread.join();
+  plumbot.find_move(go_params.depth);
   os << "bestmove " << chess::uci::moveToUci(plumbot.get_best_move()) << std::endl;
 }
 
