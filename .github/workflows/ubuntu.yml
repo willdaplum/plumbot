@@ -88,4 +88,5 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           pwd
-          ./fastchess/fastchess --compliance plumbot/build/standalone/Plumbot
+          ls
+          ./fastchess/fastchess --compliance build/standalone/Plumbot
