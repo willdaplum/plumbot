@@ -114,9 +114,11 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     return PositionEvaluation(0);  // Draw
   }
 
-  std::random_device rd;
-  std::mt19937 g(rd());
-  std::shuffle(moves.begin(), moves.end(), g);
+  if(randomize) {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(moves.begin(), moves.end(), g);
+  }
 
   PositionEvaluation eval = PositionEvaluation();
   if (maximizing_player) {
@@ -124,7 +126,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     for (auto it = moves.begin(); it != moves.end(); ++it) {
       m_board.makeMove(*it);
       std::string move_uci = chess::uci::moveToUci(*it);
-      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, false);
+      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, false, randomize);
       cur_eval.move = *it;
 
       if (compare_moves(cur_eval, eval, maximizing_player)) {
@@ -145,7 +147,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     for (auto it = moves.begin(); it != moves.end(); ++it) {
       m_board.makeMove(*it);
       std::string move_uci = chess::uci::moveToUci(*it);
-      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, true);
+      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, true, randomize);
       cur_eval.move = *it;
 
       if (compare_moves(cur_eval, eval, maximizing_player)) {
