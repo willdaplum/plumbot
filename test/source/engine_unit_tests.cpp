@@ -144,7 +144,20 @@ TEST_F(EngineTest, MateInOne) {
       std::make_pair("8/p1p1bkq1/2Q1nNr1/3pP1r1/3P3p/5P1P/P5PK/2R3R1 w - - 0 1", "c6e8"),
       std::make_pair("8/8/8/knN5/1n6/8/3N4/4K3 w - - 0 1", "d2c4"),
   };
-  // std::make_pair("8/8/R6p/4pkp1/4N3/3P2PP/1r6/3K4 w - - 0 1", "a6f6"), FAILS, remove for now
+
+  for (size_t i = 0; i < fen_and_move.size(); ++i) {
+    engine.set_position(fen_and_move[i].first);
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6, false));
+    EXPECT_EQ(engine_move, fen_and_move[i].second);
+  }
+}
+
+TEST_F(EngineTest, MateInOneOverLongerMates) {
+  std::vector<std::pair<std::string, std::string>> fen_and_move = {
+    std::make_pair("8/8/R6p/4pkp1/4N3/3P2PP/1r6/3K4 w - - 0 1", "a6f6"),
+    std::make_pair("k7/7R/8/8/8/8/8/3K2R1 w - - 0 1", "g1g8"),
+    std::make_pair("k7/p1p1p3/PpPpP3/1P1P1Q2/8/8/8/8 w - - 0 1", "f5f8"),
+  };
 
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
     engine.set_position(fen_and_move[i].first);
