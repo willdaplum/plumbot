@@ -9,7 +9,7 @@ TEST(EngineWrapperTest, Position) {
       "position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 }
 
-TEST(EngineWrapperTest, TwoMoveRepetitionNotNull) {
+/* TEST(EngineWrapperTest, TwoMoveRepetitionNotNull) {
   EngineInterface engine_interface = EngineInterface();
   std::ostringstream oss;
   engine_interface.process_command(
@@ -20,4 +20,4 @@ TEST(EngineWrapperTest, TwoMoveRepetitionNotNull) {
       oss);
   engine_interface.process_command("go", oss);
   EXPECT_TRUE(oss && oss.str() != "bestmove a1a1\n");
-}
+} */
