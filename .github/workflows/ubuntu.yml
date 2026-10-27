@@ -77,13 +77,15 @@ jobs:
       - name: Checkout fast-chess
         uses: actions/checkout@v4
         with:
-          repository: Disservin/fast-chess
-          path: fast-chess
+          repository: Disservin/fastchess
+          path: fastchess
 
-      - name: Build fast-chess
-        working-directory: fast-chess
+      - name: Build fastchess
+        working-directory: fastchess
         run: make -j
 
       - name: Run UCI compliance check
         run: |
+          cd $GITHUB_WORKSPACE
+          pwd
           ./fastchess/fastchess --compliance plumbot/build/standalone/Plumbot
