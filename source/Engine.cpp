@@ -84,7 +84,7 @@ PositionEvaluation Engine::static_evaluation() {
 }
 
 // TODO: turn alpha and beta into PositionEvaluation objects? I think?
-PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool maximizing_player) {
+PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool maximizing_player, bool randomize) {
   if (depth == 0 || m_stop_search) {
     return static_evaluation();
   }
@@ -166,13 +166,13 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
   }
 }
 
-chess::Move Engine::find_move(int depth) {
+chess::Move Engine::find_move(int depth, bool randomize) {
   m_stop_search = false;
   PositionEvaluation best_move = PositionEvaluation();
   bool maximizing_player = m_board.sideToMove() == chess::Color::WHITE;
   for (int ply = 1; ply <= depth; ++ply) {
     best_move = minimax(ply, -std::numeric_limits<double>::infinity(),
-                        std::numeric_limits<double>::infinity(), maximizing_player);
+                        std::numeric_limits<double>::infinity(), maximizing_player, randomize);
     if (m_stop_search) {
       break;
     }
