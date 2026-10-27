@@ -5,10 +5,12 @@ on:
     branches:
       - master
       - main
+      - dev
   pull_request:
     branches:
       - master
       - main
+      - dev
 
 env:
   CTEST_OUTPUT_ON_FAILURE: 1
@@ -27,7 +29,7 @@ jobs:
           path: "**/cpm_modules"
           key: ${{ github.workflow }}-cpm-modules-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
 
-      - name: Install LLVM 18
+      - name: install LLVM 18
         run: |
           sudo apt-get update
           wget https://apt.llvm.org/llvm.sh
@@ -71,3 +73,20 @@ jobs:
         with:
           files: coverage.info
           fail_ci_if_error: true
+
+      - name: Checkout fast-chess
+        uses: actions/checkout@v4
+        with:
+          repository: Disservin/fastchess
+          path: fastchess
+
+      - name: Build fastchess
+        working-directory: fastchess
+        run: make -j
+
+      - name: Run UCI compliance check
+        run: |
+          cd $GITHUB_WORKSPACE
+          pwd
+          ls
+          ./fastchess/fastchess --compliance build/standalone/Plumbot

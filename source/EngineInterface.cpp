@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <thread>
 #include <vector>
 
 #include "engine/Command.hpp"
@@ -45,8 +46,11 @@ void EngineInterface::process_command(const std::string uci_input, std::ostream&
       debug_cmd(vectorize_options(uci_options));
       break;
     case UCICommand::GO:
-      go_cmd(os);
+    {
+      std::thread go_thread([&]() { go_cmd(vectorize_options(uci_options), os); });
+      go_thread.detach();
       break;
+    }
     case UCICommand::ISREADY:
       isready_cmd(os);
       break;
@@ -62,6 +66,7 @@ void EngineInterface::process_command(const std::string uci_input, std::ostream&
     case UCICommand::SETOPTION:
       break;
     case UCICommand::STOP:
+      stop_cmd();
       break;
     case UCICommand::UCI:
       uci_cmd(os);
@@ -105,7 +110,66 @@ void EngineInterface::position_cmd(const std::vector<std::string>& uci_options) 
   }
 }
 
-void EngineInterface::go_cmd(std::ostream& os) {
-  chess::Move move = plumbot.find_move(5, true);
-  os << "bestmove " << chess::uci::moveToUci(move) << std::endl;
+// TODO: set go options as member variables?
+GoParameters EngineInterface::parse_go_options(const std::vector<std::string>& uci_options) {
+  std::vector<chess::Move> search_moves;
+  GoParameters go_params;
+
+  for (auto option_it = uci_options.begin(); option_it != uci_options.end(); ++option_it) {
+    if (go_options.find(*option_it) != go_options.end()) {
+      GoOption go_option = go_options.at(*option_it);
+      switch (go_option) {
+        case GoOption::SEARCHMOVES:
+          for (auto searchmove_it = option_it + 1;
+               searchmove_it != uci_options.end()
+               && go_options.find(*searchmove_it) == go_options.end();
+               ++searchmove_it) {
+            search_moves.push_back(chess::uci::uciToMove(plumbot.get_board(), *searchmove_it));
+          }
+          break;
+        case GoOption::PONDER:
+          go_params.ponder = true;
+          break;
+        case GoOption::WTIME:
+          go_params.wtime = std::stoi(*(++option_it));
+          break;
+        case GoOption::BTIME:
+          go_params.btime = std::stoi(*(++option_it));
+          break;
+        case GoOption::WINC:
+          go_params.winc = std::stoi(*(++option_it));
+          break;
+        case GoOption::BINC:
+          go_params.binc = std::stoi(*(++option_it));
+          break;
+        case GoOption::MOVESTOGO:
+          go_params.movestogo = std::stoi(*(++option_it));
+          break;
+        case GoOption::DEPTH:
+          go_params.depth = std::stoi(*(++option_it));
+          break;
+        case GoOption::NODES:
+          go_params.nodes = std::stoi(*(++option_it));
+          break;
+        case GoOption::MOVETIME:
+          go_params.movetime = std::stoi(*(++option_it));
+          break;
+        case GoOption::INFINITE:
+          go_params.infinite = true;
+          break;
+      }
+    }
+  }
+
+  return go_params;
 }
+
+void EngineInterface::go_cmd(const std::vector<std::string>& uci_options, std::ostream& os) {
+  GoParameters go_params = parse_go_options(uci_options);
+
+  plumbot.find_move(go_params.depth, false);
+  os << "info score cp 13  depth 1 nodes 13 time 15 pv f1b5" << std::endl; // TODO: actually dynamic info
+  os << "bestmove " << chess::uci::moveToUci(plumbot.get_best_move()) << std::endl;
+}
+
+void EngineInterface::stop_cmd() { plumbot.stop_search(); }

@@ -22,9 +22,11 @@ private:
 
   std::vector<std::string> vectorize_options_with_fen(const std::string uci_options);
 
+  GoParameters parse_go_options(const std::vector<std::string>& uci_options);
+
   void uci_cmd(std::ostream& os = std::cout);
 
-  void debug_cmd(const std::vector<std::string> &uci_options);
+  void debug_cmd(const std::vector<std::string>& uci_options);
 
   void isready_cmd(std::ostream& os = std::cout);
 
@@ -34,11 +36,11 @@ private:
 
   std::string ucinewgame_cmd();
 
-  void position_cmd(const std::vector<std::string> &uci_options);
+  void position_cmd(const std::vector<std::string>& uci_options);
 
-  void go_cmd(std::ostream& os = std::cout);
+  void go_cmd(const std::vector<std::string>& uci_options, std::ostream& os = std::cout);
 
-  std::string stop_cmd();
+  void stop_cmd();
 
   std::string ponderhit_cmd();
 
@@ -53,4 +55,24 @@ private:
       {"position", UCICommand::POSITION}, {"go", UCICommand::GO},
       {"stop", UCICommand::STOP},         {"ponderhit", UCICommand::PONDERHIT},
       {"quit", UCICommand::QUIT}};
+
+  const std::unordered_map<std::string, DebugOption> debug_options{{"on", DebugOption::ON},
+                                                                   {"off", DebugOption::OFF}};
+
+  const std::unordered_map<std::string, GoOption> go_options{{"searchmoves", GoOption::SEARCHMOVES},
+                                                             {"ponder", GoOption::PONDER},
+                                                             {"wtime", GoOption::WTIME},
+                                                             {"btime", GoOption::BTIME},
+                                                             {"winc", GoOption::WINC},
+                                                             {"binc", GoOption::BINC},
+                                                             {"movestogo", GoOption::MOVESTOGO},
+                                                             {"depth", GoOption::DEPTH},
+                                                             {"nodes", GoOption::NODES},
+                                                             {"movetime", GoOption::MOVETIME},
+                                                             {"infinite", GoOption::INFINITE}};
+
+  const std::unordered_map<std::string, RegisterOption> register_options{
+      {"later", RegisterOption::LATER},
+      {"name", RegisterOption::NAME},
+      {"code", RegisterOption::CODE}};
 };

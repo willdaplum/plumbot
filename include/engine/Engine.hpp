@@ -52,6 +52,8 @@ public:
    */
   std::string get_position();
 
+  chess::Board get_board();
+
   /**
    * @brief Make move on engine board
    * @param uci_move move in UCI format
@@ -65,6 +67,10 @@ public:
   void send_uciok(std::ostream& os = std::cout);
 
   void send_isready(std::ostream& os = std::cout);
+
+  void send_info(std::ostream& os = std::cout);
+
+  chess::Move get_best_move();
 
   /**
    * @brief Choose move on board using minimax with alphabeta
@@ -88,6 +94,8 @@ public:
    */
   bool compare_moves(PositionEvaluation a, PositionEvaluation b, bool maximizing_player);
 
+  void stop_search();
+
 private:
   PositionEvaluation minimax(int depth, double alpha, double beta, bool maximizing_player, bool randomize);
 
@@ -98,6 +106,8 @@ private:
   const std::string m_id_name = "plumbot";
   const std::string m_id_author = "will cooley";
   bool m_debug_mode = false;
+  bool m_stop_search = false;
+  chess::Move m_best_move = chess::Move::NO_MOVE;
   chess::Board m_board = chess::Board(chess::constants::STARTPOS);
   std::unordered_map<int, int> m_piece_values = {{static_cast<int>(chess::PieceType::PAWN), 1},
                                                  {static_cast<int>(chess::PieceType::BISHOP), 3},

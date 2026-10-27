@@ -85,7 +85,7 @@ PositionEvaluation Engine::static_evaluation() {
 
 // TODO: turn alpha and beta into PositionEvaluation objects? I think?
 PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool maximizing_player, bool randomize) {
-  if (depth == 0) {
+  if (depth == 0 || m_stop_search) {
     return static_evaluation();
   }
   if (m_board.isRepetition()) {
@@ -166,26 +166,19 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
   }
 }
 
-/*
-if (m_debug_mode) {
-        if (depth == 2) {
-          std::cout << "-";
-        } else if (depth == 1) {
-          std::cout << "--";
-        }
-        std::cout << "d: " << depth << " move: " << move_uci << " score: " << cur_eval.score
-                  << std::endl;
-      }
-*/
-
 chess::Move Engine::find_move(int depth, bool randomize) {
+  m_stop_search = false;
   PositionEvaluation best_move = PositionEvaluation();
   bool maximizing_player = m_board.sideToMove() == chess::Color::WHITE;
   for (int ply = 1; ply <= depth; ++ply) {
     best_move = minimax(ply, -std::numeric_limits<double>::infinity(),
                         std::numeric_limits<double>::infinity(), maximizing_player, randomize);
+    if (m_stop_search) {
+      break;
+    }
+    m_best_move = best_move.move;
   }
-  return best_move.move;
+  return m_best_move;
 }
 
 bool Engine::compare_moves(PositionEvaluation a, PositionEvaluation b, bool maximizing_player) {
@@ -231,3 +224,9 @@ bool Engine::compare_moves(PositionEvaluation a, PositionEvaluation b, bool maxi
     }
   }
 }
+
+chess::Move Engine::get_best_move() { return m_best_move; }
+
+void Engine::stop_search() { m_stop_search = true; }
+
+chess::Board Engine::get_board() { return m_board; }
