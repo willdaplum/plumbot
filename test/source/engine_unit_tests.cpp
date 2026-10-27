@@ -156,7 +156,7 @@ TEST_F(EngineTest, MateInOneOverLongerMates) {
   std::vector<std::pair<std::string, std::string>> fen_and_move = {
     std::make_pair("8/8/R6p/4pkp1/4N3/3P2PP/1r6/3K4 w - - 0 1", "a6f6"),
     std::make_pair("k7/7R/8/8/8/8/8/3K2R1 w - - 0 1", "g1g8"),
-    std::make_pair("k7/p1p1p3/PpPpP3/1P1P1Q2/8/8/8/8 w - - 0 1", "f5f8"),
+    std::make_pair("k7/p1p1p3/PpPpP3/1P1P1Q2/8/8/8/2K5 w - - 0 1", "f5f8"),
   };
 
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
