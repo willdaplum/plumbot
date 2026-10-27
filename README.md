@@ -18,7 +18,7 @@ Use the following command to build and run the executable target.
 ```bash
 cmake -S standalone -B build/standalone
 cmake --build build/standalone
-./build/standalone/Plumbot --help
+./build/standalone/Plumbot
 ```
 
 ### Build and run test suite
@@ -26,7 +26,7 @@ cmake --build build/standalone
 Use the following commands from the project's root directory to run the test suite.
 
 ```bash
-cmake -S test -B build/test
+cmake -S test -B build/test -DCMAKE_BUILD_TYPE=Debug
 cmake --build build/test
 CTEST_OUTPUT_ON_FAILURE=1 cmake --build build/test --target test
 

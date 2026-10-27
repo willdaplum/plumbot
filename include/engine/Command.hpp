@@ -44,7 +44,7 @@ struct GoParameters {
   int winc = 0;
   int binc = 0;
   int movestogo = 0;
-  int depth = 0;
+  int depth = 6; // TODO: should default depth be infinite or something else? (depth in plys)
   int nodes = 0;
   int movetime = 0;
   bool infinite = false;

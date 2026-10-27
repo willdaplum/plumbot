@@ -168,6 +168,7 @@ void EngineInterface::go_cmd(const std::vector<std::string>& uci_options, std::o
   GoParameters go_params = parse_go_options(uci_options);
 
   plumbot.find_move(go_params.depth);
+  os << "info score cp 13  depth 1 nodes 13 time 15 pv f1b5" << std::endl; // TODO: actually dynamic info
   os << "bestmove " << chess::uci::moveToUci(plumbot.get_best_move()) << std::endl;
 }
 
