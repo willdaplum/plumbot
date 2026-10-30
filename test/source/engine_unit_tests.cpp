@@ -9,7 +9,9 @@ class EngineTest : public ::testing::Test {
 protected:
   Engine engine;  // expensive object
 
-  void SetUp() override {}
+  void SetUp() override {
+    engine.set_debug(DebugOption::ON);
+  }
 
   void TearDown() override {
     engine.set_debug(DebugOption::OFF);
@@ -19,11 +21,11 @@ protected:
 
 TEST_F(EngineTest, SetDebugFlag) {
   engine.set_debug(DebugOption::ON);
-  EXPECT_EQ(engine.get_debug(), true);
+  EXPECT_EQ(engine.get_debug(), DebugOption::ON);
   engine.set_debug(DebugOption::OFF);
-  EXPECT_EQ(engine.get_debug(), false);
+  EXPECT_EQ(engine.get_debug(), DebugOption::OFF);
   engine.set_debug(DebugOption::ON);
-  EXPECT_EQ(engine.get_debug(), true);
+  EXPECT_EQ(engine.get_debug(), DebugOption::ON);
 }
 
 TEST_F(EngineTest, SetPosition) {
@@ -130,7 +132,7 @@ TEST_F(EngineTest, PushTwoMoves) {
 
 TEST_F(EngineTest, FindMoveTakeQueenSimple) {
   engine.set_position("6k1/q7/8/8/8/4Q3/8/3K4 w - - 0 1");
-  std::string engine_move = chess::uci::moveToUci(engine.find_move(6, false));
+  std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
   EXPECT_EQ(engine_move, "e3a7");
 }
 
@@ -147,7 +149,7 @@ TEST_F(EngineTest, MateInOne) {
 
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
     engine.set_position(fen_and_move[i].first);
-    std::string engine_move = chess::uci::moveToUci(engine.find_move(6, false));
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
     EXPECT_EQ(engine_move, fen_and_move[i].second);
   }
 }
@@ -161,7 +163,7 @@ TEST_F(EngineTest, MateInOneOverLongerMates) {
 
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
     engine.set_position(fen_and_move[i].first);
-    std::string engine_move = chess::uci::moveToUci(engine.find_move(6, false));
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
     EXPECT_EQ(engine_move, fen_and_move[i].second);
   }
 }
@@ -179,7 +181,7 @@ TEST_F(EngineTest, SimpleCaptures) {
 
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
     engine.set_position(fen_and_move[i].first);
-    std::string engine_move = chess::uci::moveToUci(engine.find_move(6, false));
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
     EXPECT_EQ(engine_move, fen_and_move[i].second);
   }
 }
@@ -190,7 +192,7 @@ TEST_F(EngineTest, IntermediateCaptures) {
       std::make_pair("r1b1r1k1/pp1p1ppp/n4n2/1Nbp4/3B4/5P2/PPP1P1PP/R2K1BNR w - - 8 13", "d4c5")};
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
     engine.set_position(fen_and_move[i].first);
-    std::string engine_move = chess::uci::moveToUci(engine.find_move(6, false));
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
     EXPECT_EQ(engine_move, fen_and_move[i].second);
   }
 }
@@ -216,7 +218,7 @@ TEST_F(EngineTest, MateInTwo) {
 
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
     engine.set_position(fen_and_move[i].first);
-    std::string engine_move = chess::uci::moveToUci(engine.find_move(6, false));
+    std::string engine_move = chess::uci::moveToUci(engine.find_move(6));
     EXPECT_EQ(engine_move, fen_and_move[i].second);
   }
 }

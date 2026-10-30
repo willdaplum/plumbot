@@ -40,9 +40,9 @@ void Engine::send_id(std::ostream& os) {
   os << "id author " << m_id_author << std::endl;
 }
 
-void Engine::set_debug(DebugOption debug_mode) { m_debug_mode = static_cast<int>(debug_mode); }
+void Engine::set_debug(DebugOption debug_mode) { m_debug_mode = debug_mode; }
 
-bool Engine::get_debug() { return m_debug_mode; }
+DebugOption Engine::get_debug() { return m_debug_mode; }
 
 void Engine::send_info(std::string info, std::ostream& os) { os << "info " << info << std::endl; }
 
@@ -84,7 +84,7 @@ PositionEvaluation Engine::static_evaluation() {
 }
 
 // TODO: turn alpha and beta into PositionEvaluation objects? I think?
-PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool maximizing_player, bool randomize) {
+PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool maximizing_player) {
   if (depth == 0 || m_stop_search) {
     return static_evaluation();
   }
@@ -114,7 +114,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     return PositionEvaluation(0);  // Draw
   }
 
-  if(randomize) {
+  if(m_debug_mode == DebugOption::ON) {
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(moves.begin(), moves.end(), g);
@@ -126,7 +126,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     for (auto it = moves.begin(); it != moves.end(); ++it) {
       m_board.makeMove(*it);
       std::string move_uci = chess::uci::moveToUci(*it);
-      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, false, randomize);
+      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, false);
       cur_eval.move = *it;
 
       if (compare_moves(cur_eval, eval, maximizing_player)) {
@@ -147,7 +147,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     for (auto it = moves.begin(); it != moves.end(); ++it) {
       m_board.makeMove(*it);
       std::string move_uci = chess::uci::moveToUci(*it);
-      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, true, randomize);
+      PositionEvaluation cur_eval = minimax(depth - 1, alpha, beta, true);
       cur_eval.move = *it;
 
       if (compare_moves(cur_eval, eval, maximizing_player)) {
@@ -166,13 +166,13 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
   }
 }
 
-chess::Move Engine::find_move(int depth, bool randomize) {
+chess::Move Engine::find_move(int depth) {
   m_stop_search = false;
   PositionEvaluation best_move = PositionEvaluation();
   bool maximizing_player = m_board.sideToMove() == chess::Color::WHITE;
   for (int ply = 1; ply <= depth; ++ply) {
     best_move = minimax(ply, -std::numeric_limits<double>::infinity(),
-                        std::numeric_limits<double>::infinity(), maximizing_player, randomize);
+                        std::numeric_limits<double>::infinity(), maximizing_player);
     // std::string best_move_uci = chess::uci::moveToUci(best_move.move);
     if (m_stop_search) {
       break;

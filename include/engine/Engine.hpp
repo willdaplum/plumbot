@@ -23,16 +23,18 @@ public:
 class Engine {
 public:
   /**
-   * @brief Interprets UCI commands and forwards to chess engine
-   * @param debug_mode Flag to be set (ON -> true)
+   * @brief Sets debug flag
+   * DebugOption::ON -> deterministic moves
+   * DebugOption::OFF -> randomize choice of move (of equal value)
+   * @param debug_mode Flag to be set
    */
   void set_debug(DebugOption debug_mode);
 
   /**
-   * @brief Get boolean of debug flag (true -> ON)
-   * @return true if debug output is on
+   * @brief Get debug flag
+   * @return DebugOption::ON or DebugOption::OFF
    */
-  bool get_debug();
+  DebugOption get_debug();
 
   /**
    * @brief Sets board to given fen position
@@ -75,10 +77,9 @@ public:
   /**
    * @brief Choose move on board using minimax with alphabeta
    * @param depth # of ply(s) to search w minimax, must be >= 1
-   * @param randomize true: choose random move with equal value, false: first move. Set to false for testing/debugging
    * @return Move on memeber board engine finds to be optimal
    */
-  chess::Move find_move(int depth, bool randomize);
+  chess::Move find_move(int depth);
 
   /**
    * @brief Compare two PositionEvaluation objects, with a choice to maximize or minimize.
@@ -97,7 +98,7 @@ public:
   void stop_search();
 
 private:
-  PositionEvaluation minimax(int depth, double alpha, double beta, bool maximizing_player, bool randomize);
+  PositionEvaluation minimax(int depth, double alpha, double beta, bool maximizing_player);
 
   PositionEvaluation static_evaluation();
 
@@ -105,7 +106,7 @@ private:
 
   const std::string m_id_name = "plumbot";
   const std::string m_id_author = "will cooley";
-  bool m_debug_mode = false;
+  DebugOption m_debug_mode = DebugOption::OFF;
   bool m_stop_search = false;
   chess::Move m_best_move = chess::Move::NO_MOVE;
   chess::Board m_board = chess::Board(chess::constants::STARTPOS);

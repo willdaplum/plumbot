@@ -28,7 +28,7 @@ std::vector<std::string> EngineInterface::vectorize_options_with_fen(
 }
 
 void EngineInterface::process_command(const std::string uci_input, std::ostream& os) {
-  const std::string delimiter = " ";
+  const std::string delimiter = " "; // TODO: fails on single word command e.g. "go\n"
   std::string uci_command_text = uci_input.substr(0, uci_input.find(delimiter));
   std::string uci_options = uci_input.substr(uci_input.find(delimiter) + 1);
 
@@ -167,7 +167,7 @@ GoParameters EngineInterface::parse_go_options(const std::vector<std::string>& u
 void EngineInterface::go_cmd(const std::vector<std::string>& uci_options, std::ostream& os) {
   GoParameters go_params = parse_go_options(uci_options);
 
-  plumbot.find_move(go_params.depth, false);
+  plumbot.find_move(go_params.depth);
   os << "info score cp 13  depth 1 nodes 13 time 15 pv f1b5" << std::endl; // TODO: actually dynamic info
   os << "bestmove " << chess::uci::moveToUci(plumbot.get_best_move()) << std::endl;
 }
