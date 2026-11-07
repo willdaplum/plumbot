@@ -11,7 +11,7 @@ class EngineInterface {
 public:
   /**
    * @brief Interprets UCI commands and forwards to chess engine
-   * @param uci_input the command line input to be parsed as UCI
+   * @param uci_input the command line input to be parsed as UCI (does not include newline char)
    * @param os stream for command output, defaults to std::cout (use stringstream for testing)
    * @return a string of expected UCI output
    */

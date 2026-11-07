@@ -173,7 +173,7 @@ chess::Move Engine::find_move(int depth) {
   for (int ply = 1; ply <= depth; ++ply) {
     best_move = minimax(ply, -std::numeric_limits<double>::infinity(),
                         std::numeric_limits<double>::infinity(), maximizing_player);
-    // std::string best_move_uci = chess::uci::moveToUci(best_move.move);
+    std::string best_move_uci = chess::uci::moveToUci(best_move.move);
     if (m_stop_search) {
       break;
     }

@@ -28,9 +28,18 @@ std::vector<std::string> EngineInterface::vectorize_options_with_fen(
 }
 
 void EngineInterface::process_command(const std::string uci_input, std::ostream& os) {
-  const std::string delimiter = " "; // TODO: fails on single word command e.g. "go\n"
-  std::string uci_command_text = uci_input.substr(0, uci_input.find(delimiter));
-  std::string uci_options = uci_input.substr(uci_input.find(delimiter) + 1);
+  const std::string delimiter = " ";
+  size_t command_end_index = uci_input.find(delimiter);
+  std::string uci_command_text = "";
+  std::string uci_options = "";
+  if (command_end_index != std::string::npos) {
+    uci_command_text = uci_input.substr(0, command_end_index);
+    uci_options = uci_input.substr(command_end_index + 1);
+  }
+  else {
+    uci_command_text = uci_input;
+    uci_options = "";
+  }
 
   auto uci_command_it = uci_commands.find(uci_command_text);
   if (uci_command_it == uci_commands.end()) {
