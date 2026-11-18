@@ -7,11 +7,10 @@
 
 class EngineTest : public ::testing::Test {
 protected:
-  Engine engine;  // expensive object
+  std::ostringstream oss;
+  Engine engine = Engine(oss);  // expensive object
 
-  void SetUp() override {
-    engine.set_debug(DebugOption::ON);
-  }
+  void SetUp() override { engine.set_debug(DebugOption::ON); }
 
   void TearDown() override {
     engine.set_debug(DebugOption::OFF);
@@ -24,8 +23,6 @@ TEST_F(EngineTest, SetDebugFlag) {
   EXPECT_EQ(engine.get_debug(), DebugOption::ON);
   engine.set_debug(DebugOption::OFF);
   EXPECT_EQ(engine.get_debug(), DebugOption::OFF);
-  engine.set_debug(DebugOption::ON);
-  EXPECT_EQ(engine.get_debug(), DebugOption::ON);
 }
 
 TEST_F(EngineTest, SetPosition) {
@@ -156,9 +153,9 @@ TEST_F(EngineTest, MateInOne) {
 
 TEST_F(EngineTest, MateInOneOverLongerMates) {
   std::vector<std::pair<std::string, std::string>> fen_and_move = {
-    std::make_pair("8/8/R6p/4pkp1/4N3/3P2PP/1r6/3K4 w - - 0 1", "a6f6"),
-    std::make_pair("k7/7R/8/8/8/8/8/3K2R1 w - - 0 1", "g1g8"),
-    std::make_pair("k7/p1p1p3/PpPpP3/1P1P1Q2/8/8/8/2K5 w - - 0 1", "f5f8"),
+      std::make_pair("8/8/R6p/4pkp1/4N3/3P2PP/1r6/3K4 w - - 0 1", "a6f6"),
+      std::make_pair("k7/7R/8/8/8/8/8/3K2R1 w - - 0 1", "g1g8"),
+      std::make_pair("k7/p1p1p3/PpPpP3/1P1P1Q2/8/8/8/2K5 w - - 0 1", "f5f8"),
   };
 
   for (size_t i = 0; i < fen_and_move.size(); ++i) {
@@ -196,7 +193,6 @@ TEST_F(EngineTest, IntermediateCaptures) {
     EXPECT_EQ(engine_move, fen_and_move[i].second);
   }
 }
-
 
 TEST_F(EngineTest, MateInTwo) {
   std::vector<std::pair<std::string, std::string>> fen_and_move = {

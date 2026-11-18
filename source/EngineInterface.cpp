@@ -7,6 +7,10 @@
 
 #include "engine/Command.hpp"
 
+EngineInterface::EngineInterface() : plumbot(std::cout) {};
+
+EngineInterface::EngineInterface(std::ostream& os) : plumbot(os) {};
+
 std::vector<std::string> EngineInterface::vectorize_options(const std::string uci_options) {
   std::stringstream ss(uci_options);
   std::istream_iterator<std::string> begin(ss);
@@ -27,7 +31,7 @@ std::vector<std::string> EngineInterface::vectorize_options_with_fen(
   return v_options;
 }
 
-void EngineInterface::process_command(const std::string uci_input, std::ostream& os) {
+void EngineInterface::process_command(const std::string uci_input) {
   const std::string delimiter = " ";
   size_t command_end_index = uci_input.find(delimiter);
   std::string uci_command_text = "";
@@ -35,33 +39,30 @@ void EngineInterface::process_command(const std::string uci_input, std::ostream&
   if (command_end_index != std::string::npos) {
     uci_command_text = uci_input.substr(0, command_end_index);
     uci_options = uci_input.substr(command_end_index + 1);
-  }
-  else {
+  } else {
     uci_command_text = uci_input;
     uci_options = "";
   }
 
   auto uci_command_it = uci_commands.find(uci_command_text);
   if (uci_command_it == uci_commands.end()) {
-    os << "HELP THIS IS AN ERROR:";
+    // TODO: handle error
   }
   UCICommand uci_command = uci_command_it->second;
 
   switch (uci_command) {
     default:
-      os << "unrecognized command\n";
       break;
     case UCICommand::DEBUG:
       debug_cmd(vectorize_options(uci_options));
       break;
-    case UCICommand::GO:
-    {
-      std::thread go_thread([&]() { go_cmd(vectorize_options(uci_options), os); });
+    case UCICommand::GO: {
+      std::thread go_thread([&]() { go_cmd(vectorize_options(uci_options)); });
       go_thread.detach();
       break;
     }
     case UCICommand::ISREADY:
-      isready_cmd(os);
+      isready_cmd();
       break;
     case UCICommand::PONDERHIT:
       break;
@@ -78,16 +79,16 @@ void EngineInterface::process_command(const std::string uci_input, std::ostream&
       stop_cmd();
       break;
     case UCICommand::UCI:
-      uci_cmd(os);
+      uci_cmd();
       break;
     case UCICommand::UCINEWGAME:
       break;
   }
 }
 
-void EngineInterface::uci_cmd(std::ostream& os) {
-  plumbot.send_id(os);
-  plumbot.send_uciok(os);
+void EngineInterface::uci_cmd() {
+  plumbot.send_id();
+  plumbot.send_uciok();
 }
 
 void EngineInterface::debug_cmd(const std::vector<std::string>& uci_options) {
@@ -103,7 +104,7 @@ void EngineInterface::debug_cmd(const std::vector<std::string>& uci_options) {
   }
 }
 
-void EngineInterface::isready_cmd(std::ostream& os) { plumbot.send_isready(os); }
+void EngineInterface::isready_cmd() { plumbot.send_isready(); }
 
 void EngineInterface::position_cmd(const std::vector<std::string>& uci_options) {
   if (uci_options.size() == 0) {
@@ -173,12 +174,10 @@ GoParameters EngineInterface::parse_go_options(const std::vector<std::string>& u
   return go_params;
 }
 
-void EngineInterface::go_cmd(const std::vector<std::string>& uci_options, std::ostream& os) {
+void EngineInterface::go_cmd(const std::vector<std::string>& uci_options) {
   GoParameters go_params = parse_go_options(uci_options);
 
   plumbot.find_move(go_params.depth);
-  os << "info score cp 13  depth 1 nodes 13 time 15 pv f1b5" << std::endl; // TODO: actually dynamic info
-  os << "bestmove " << chess::uci::moveToUci(plumbot.get_best_move()) << std::endl;
 }
 
 void EngineInterface::stop_cmd() { plumbot.stop_search(); }

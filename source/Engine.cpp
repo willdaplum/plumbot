@@ -35,20 +35,29 @@ PositionEvaluation::PositionEvaluation(double score, int moves_to_mate)
 PositionEvaluation::PositionEvaluation(double score, int moves_to_mate, chess::Move move)
     : score(score), moves_to_mate(moves_to_mate), move(move) {}
 
-void Engine::send_id(std::ostream& os) {
-  os << "id name " << m_id_name << std::endl;
-  os << "id author " << m_id_author << std::endl;
+Engine::Engine() : m_os(std::cout) {};
+
+Engine::Engine(std::ostream& os) : m_os(os) {};
+
+void Engine::send_id() {
+  m_os << "id name " << m_id_name << std::endl;
+  m_os << "id author " << m_id_author << std::endl;
 }
 
-void Engine::set_debug(DebugOption debug_mode) { m_debug_mode = debug_mode; }
+void Engine::set_debug(DebugOption debug_mode) {
+  m_debug_mode = debug_mode;
+  if (debug_mode == DebugOption::ON) {
+    send_info("debug mode on");
+  }
+}
 
 DebugOption Engine::get_debug() { return m_debug_mode; }
 
-void Engine::send_info(std::string info, std::ostream& os) { os << "info " << info << std::endl; }
+void Engine::send_info(std::string info) { m_os << "info " << info << std::endl; }
 
-void Engine::send_uciok(std::ostream& os) { os << "uciok" << std::endl; }
+void Engine::send_uciok() { m_os << "uciok" << std::endl; }
 
-void Engine::send_isready(std::ostream& os) { os << "readyok" << std::endl; }
+void Engine::send_isready() { m_os << "readyok" << std::endl; }
 
 void Engine::push_move_uci(std::string uci_move) {
   chess::Move move = chess::uci::uciToMove(m_board, uci_move);
@@ -114,7 +123,7 @@ PositionEvaluation Engine::minimax(int depth, double alpha, double beta, bool ma
     return PositionEvaluation(0);  // Draw
   }
 
-  if(m_debug_mode == DebugOption::ON) {
+  if (m_debug_mode == DebugOption::OFF) {
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(moves.begin(), moves.end(), g);
@@ -178,10 +187,16 @@ chess::Move Engine::find_move(int depth) {
       break;
     }
     m_best_move = best_move.move;
-    if(best_move.moves_to_mate != std::numeric_limits<int>::max()) {
+    if (best_move.moves_to_mate != std::numeric_limits<int>::max()) {
       break;
     }
   }
+  if (m_debug_mode == DebugOption::ON) {
+    m_os << "info score cp 13  depth 1 nodes 13 time 15 pv f1b5"
+         << std::endl;  // TODO: actually dynamic info
+    m_os << "bestmove " << chess::uci::moveToUci(m_best_move) << std::endl;
+  }
+
   return m_best_move;
 }
 

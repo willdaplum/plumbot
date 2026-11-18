@@ -9,13 +9,17 @@
 
 class EngineInterface {
 public:
+  EngineInterface();
+
+  EngineInterface(std::ostream& os);
+
   /**
    * @brief Interprets UCI commands and forwards to chess engine
    * @param uci_input the command line input to be parsed as UCI (does not include newline char)
    * @param os stream for command output, defaults to std::cout (use stringstream for testing)
    * @return a string of expected UCI output
    */
-  void process_command(const std::string uci_input, std::ostream& os = std::cout);
+  void process_command(const std::string uci_input);
 
 private:
   std::vector<std::string> vectorize_options(const std::string uci_options);
@@ -24,11 +28,11 @@ private:
 
   GoParameters parse_go_options(const std::vector<std::string>& uci_options);
 
-  void uci_cmd(std::ostream& os = std::cout);
+  void uci_cmd();
 
   void debug_cmd(const std::vector<std::string>& uci_options);
 
-  void isready_cmd(std::ostream& os = std::cout);
+  void isready_cmd();
 
   std::string setoption_cmd();
 
@@ -38,7 +42,7 @@ private:
 
   void position_cmd(const std::vector<std::string>& uci_options);
 
-  void go_cmd(const std::vector<std::string>& uci_options, std::ostream& os = std::cout);
+  void go_cmd(const std::vector<std::string>& uci_options);
 
   void stop_cmd();
 

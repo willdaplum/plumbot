@@ -1,5 +1,5 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 #include "engine/EngineInterface.hpp"
@@ -15,7 +15,7 @@ auto main(int argc, char** argv) -> int {
   while (true) {
     std::getline(std::cin, line);
     std::ofstream myfile;
-    myfile.open (logfile_name, std::ios::app);
+    myfile.open(logfile_name, std::ios::app);
     myfile << line << std::endl;
     myfile.close();
 

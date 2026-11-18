@@ -22,6 +22,10 @@ public:
 
 class Engine {
 public:
+  Engine();
+
+  Engine(std::ostream& os);
+
   /**
    * @brief Sets debug flag
    * DebugOption::ON -> deterministic moves
@@ -62,15 +66,15 @@ public:
    */
   void push_move_uci(std::string uci_move);
 
-  void send_id(std::ostream& os = std::cout);
+  void send_id();
 
-  void send_info(std::string info, std::ostream& os = std::cout);
+  void send_info(std::string info);
 
-  void send_uciok(std::ostream& os = std::cout);
+  void send_uciok();
 
-  void send_isready(std::ostream& os = std::cout);
+  void send_isready();
 
-  void send_info(std::ostream& os = std::cout);
+  void send_info();
 
   chess::Move get_best_move();
 
@@ -104,6 +108,7 @@ private:
 
   int get_piece_value(chess::PieceType piece_type);
 
+  std::ostream& m_os = std::cout;
   const std::string m_id_name = "plumbot";
   const std::string m_id_author = "will cooley";
   DebugOption m_debug_mode = DebugOption::OFF;
